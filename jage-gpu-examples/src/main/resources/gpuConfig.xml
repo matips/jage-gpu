@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="gpu" class="org.jage.gpu.binding.jocl.JoclGpu" init-method="initialize"/>
+    <bean class="org.jage.gpu.executors.GpuExecutorRegistry">
+        <constructor-arg>
+            <list>
+                <bean class="org.jage.gpu.binding.Kernel" factory-bean="gpu" factory-method="buildKernel">
+                    <constructor-arg name="sourceFile" value="file:adding/addingPos.cl"/>
+                    <constructor-arg name="kernelName" value="addingPos"/>
+                    <constructor-arg name="inArguments">
+                        <set>
+                            <value>current_sum</value>
+                            <value>position1</value>
+                            <value>position2</value>
+                            <value>step</value>
+                        </set>
+                    </constructor-arg>
+                    <constructor-arg name="outArguments">
+                        <set>
+                            <value>result</value>
+                        </set>
+                    </constructor-arg>
+                </bean>
+                <bean class="org.jage.gpu.binding.Kernel" factory-bean="gpu" factory-method="buildKernel">
+                    <constructor-arg name="sourceFile" value="file:integral/integral.cl"/>
+                    <constructor-arg name="kernelName" value="integral"/>
+                    <constructor-arg name="inArguments">
+                        <set>
+                            <value>right_bound</value>
+                            <value>left_bound</value>
+                        </set>
+                    </constructor-arg>
+                    <constructor-arg name="outArguments">
+                        <set>
+                            <value>result</value>
+                        </set>
+                    </constructor-arg>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+</beans>

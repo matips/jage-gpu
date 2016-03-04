@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration xmlns="http://age.iisg.agh.edu.pl/schema/age"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://age.iisg.agh.edu.pl/schema/age http://age.iisg.agh.edu.pl/schema/age/age.xsd">
+
+
+    <!-- jAge components -->
+
+    <component class="org.jage.address.node.DefaultNodeAddressSupplier"/>
+    <component class="org.jage.communication.LoopbackCommunicationService"/>
+
+    <component name="configurationService" class="org.jage.lifecycle.DefaultConfigurationService"/>
+
+    <component name="defaultAgentAddressSupplier" class="org.jage.address.agent.DefaultAgentAddressSupplier"/>
+    <component name="comparator" class="org.jage.action.ordering.DefaultActionComparator" isSingleton="false"/>
+
+    <component name="aggregateActionService" class="org.jage.agent.AggregateActionService" isSingleton="false"/>
+    <component name="aggregateQueryService" class="org.jage.agent.AggregateQueryService" isSingleton="false"/>
+    <component name="aggregateMessagingService" class="org.jage.agent.AggregateMessagingService" isSingleton="false"/>
+
+
+    <component name="foramConfig" class="pl.edu.agh.jage.gpu.examples.config.Configuration"/>
+
+    <block name="oceanFragmentContainers">
+        <list name="oceanFragmentContainers">
+            <multiple count="1">
+                <agent name="oceanFragmentContainer" class="pl.edu.agh.jage.gpu.examples.GridContainer">
+                    <constructor-arg>
+                        <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+                            <constructor-arg name="nameTemplate" value="OceanFragmentContainer#*"/>
+                        </component>
+                    </constructor-arg>
+                </agent>
+            </multiple>
+        </list>
+    </block>
+
+    <block name="oceanFragment">
+        <agent class="pl.edu.agh.jage.gpu.examples.adding.agents.CPUGridFragment">
+            <constructor-arg>
+
+                <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+                    <constructor-arg name="nameTemplate" value="OceanFragment#*"/>
+                </component>
+            </constructor-arg>
+        </agent>
+    </block>
+
+    <component name="workplaceManager" class="org.jage.workplace.manager.DefaultWorkplaceManager">
+
+        <property name="workplaces" ref="oceanFragmentContainers"/>
+
+        <block name="stopCondition">
+            <component name="stopCondition" class="pl.edu.agh.jage.gpu.examples.StopCondition"/>
+        </block>
+    </component>
+</configuration>
