@@ -78,6 +78,12 @@ public class JOCLKernelExecution implements KernelExecution {
         bindParameter(kernelArgument, Pointer.to(array), Sizeof.cl_double);
     }
 
+    @Override
+    public void bindParameter(KernelArgument kernelArgument, int[] array) {
+        assert array.length == elementsSize;
+        bindParameter(kernelArgument, Pointer.to(array), Sizeof.cl_double);
+    }
+
     private void bindParameter(KernelArgument kernelArgument, Pointer pointerToArray, int subtypeSize) {
         if (kernelArgument.isIn() && kernelArgument.isOut()) {
             bindInOutParameter(kernelArgument, pointerToArray, subtypeSize);

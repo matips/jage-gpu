@@ -8,7 +8,7 @@ import org.jage.gpu.binding.KernelArgument;
 
 import com.carrotsearch.hppc.DoubleArrayList;
 
-public class DoubleArguments extends PrimitiveArguments<DoubleArrayList, double[]> {
+public class  DoubleArguments extends PrimitiveArguments<DoubleArrayList, double[]> {
     private DoubleArrayList[] in;
 
     public DoubleArguments(List<KernelArgument> arguments) {

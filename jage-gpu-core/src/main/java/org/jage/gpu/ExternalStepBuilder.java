@@ -6,5 +6,7 @@ public interface ExternalStepBuilder {
 
     ExternalStepBuilder putArg(double argument);
 
+    ExternalStepBuilder putArg(int argument);
+
     SubStep build(KernelCallBack callBack);
 }

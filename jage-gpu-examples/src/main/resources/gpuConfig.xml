@@ -8,7 +8,7 @@
         <constructor-arg>
             <list>
                 <bean class="org.jage.gpu.binding.Kernel" factory-bean="gpu" factory-method="buildKernel">
-                    <constructor-arg name="sourceFile" value="file:adding/addingPos.cl"/>
+                    <constructor-arg name="sourceFile" value="adding/addingPos.cl"/>
                     <constructor-arg name="kernelName" value="addingPos"/>
                     <constructor-arg name="inArguments">
                         <set>
@@ -25,7 +25,7 @@
                     </constructor-arg>
                 </bean>
                 <bean class="org.jage.gpu.binding.Kernel" factory-bean="gpu" factory-method="buildKernel">
-                    <constructor-arg name="sourceFile" value="file:integral/integral.cl"/>
+                    <constructor-arg name="sourceFile" value="integral/integral.cl"/>
                     <constructor-arg name="kernelName" value="integral"/>
                     <constructor-arg name="inArguments">
                         <set>
