@@ -1,15 +1,16 @@
 package org.jage.gpu.executors;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.jage.gpu.ExternalStepBuilder;
 import org.jage.gpu.KernelCallBack;
 import org.jage.gpu.agent.GpuReader;
 import org.jage.gpu.agent.SubStep;
+import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.KernelExecution;
@@ -19,9 +20,10 @@ import org.jage.gpu.executors.arguments.IntArguments;
 class GpuExecution {
     private final DoubleArguments doubleArguments;
     private final AtomicInteger argumentsRowsIndex = new AtomicInteger();
-    private final ArrayList<KernelCallBack> callBacks = new ArrayList<>();
     private final IntArguments intArguments;
     private volatile boolean isFinished = false;
+    private double[][] doublesResults;
+    private int[][] intResults;
 
     private class RowBuilder implements ExternalStepBuilder {
         int doubleIndex = 0;
@@ -46,11 +48,23 @@ class GpuExecution {
 
         @Override
         public SubStep build(KernelCallBack callBack) {
-            callBacks.add(rowIndex, callBack);
             return new SubStep() {
                 @Override
                 public void execute() {
-                    // do nothing -> callback already been called
+                    callBack.execute(new GpuReader() {
+                        int doubleIndex = 0;
+                        int intIndex = 0;
+
+                        @Override
+                        public double readDouble() {
+                            return doublesResults[doubleIndex++][rowIndex];
+                        }
+
+                        @Override
+                        public double readInt() {
+                            return intResults[intIndex++][rowIndex];
+                        }
+                    });
                 }
 
                 @Override
@@ -63,8 +77,13 @@ class GpuExecution {
     }
 
     public GpuExecution(List<KernelArgument> kernelArguments) {
-        this.doubleArguments = new DoubleArguments(kernelArguments);
-        this.intArguments = new IntArguments(kernelArguments);
+        this.doubleArguments = new DoubleArguments(filterArguments(kernelArguments, ArgumentType.DOUBLE_ARRAY));
+        this.intArguments = new IntArguments(filterArguments(kernelArguments, ArgumentType.INT_ARRAY));
+    }
+
+    private List<KernelArgument> filterArguments(List<KernelArgument> kernelArguments, ArgumentType doubleArray) {
+        return kernelArguments.stream().filter(kernelArgument -> kernelArgument.getType().equals(doubleArray)).collect(
+                Collectors.toList());
     }
 
     public void flush(Kernel kernel) {
@@ -74,37 +93,21 @@ class GpuExecution {
         try (KernelExecution kernelExecution = kernel.newExecution(gpuArgumentsNumber)) {
             Map<KernelArgument, double[]> doubleArrays = doubleArguments.getArrays(gpuArgumentsNumber);
             Map<KernelArgument, int[]> intArrays = intArguments.getArrays(gpuArgumentsNumber);
-            double[][] doublesResults = doubleArrays.entrySet().stream()
+            doublesResults = doubleArrays.entrySet().stream()
                     .filter(entry -> entry.getKey().isOut())
                     .sorted(Comparator.comparingInt(entry -> entry.getKey().getArgumentIndex()))
                     .map(Map.Entry::getValue)
                     .toArray(double[][]::new);
-            int[][] intResults = intArrays.entrySet().stream()
+            intResults = intArrays.entrySet().stream()
                     .filter(entry -> entry.getKey().isOut())
                     .sorted(Comparator.comparingInt(entry -> entry.getKey().getArgumentIndex()))
                     .map(Map.Entry::getValue)
                     .toArray(int[][]::new);
 
             doubleArrays.forEach(kernelExecution::bindParameter);
+            intArrays.forEach(kernelExecution::bindParameter);
 
             kernelExecution.execute();
-            for (int i = 0; i < callBacks.size(); i++) {
-                final int row = i;
-                callBacks.get(i).execute(new GpuReader() {
-                    int doubleIndex = 0;
-                    int intIndex = 0;
-
-                    @Override
-                    public double readDouble() {
-                        return doublesResults[doubleIndex++][row];
-                    }
-
-                    @Override
-                    public double readInt() {
-                        return intResults[intIndex++][row];
-                    }
-                });
-            }
             isFinished = true;
         }
     }

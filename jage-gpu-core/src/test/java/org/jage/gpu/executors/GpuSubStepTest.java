@@ -4,10 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.bcel.util.ClassLoader;
+import org.jage.gpu.agent.SubStep;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.jocl.JoclGpu;
 import org.junit.Before;
@@ -33,20 +36,22 @@ public class GpuSubStepTest {
     public void testFlush() throws Exception {
         Random random = new Random();
         AtomicInteger callackCalls = new AtomicInteger();
+        List<SubStep> subSteps = new ArrayList<>();
         for (int i = 0; i < 40; i++) {
             double a1 = random.nextDouble();
             double a2 = random.nextDouble();
-            instance.createStep()
+            subSteps.add(instance.createStep()
                     .putArg(a1)
                     .putArg(a2)
                     .build(gpuReader -> {
                         assertEquals("Different on " + callackCalls.get() + " comparation", a1 + a2, gpuReader.readDouble(), 1e-20);
                         callackCalls.incrementAndGet();
-                    });
-
+                    }));
 
         }
+
+        subSteps.stream().map(SubStep::canExecute).forEach(org.junit.Assert::assertFalse);
         instance.flush();
-        assertEquals(40, callackCalls.get());
+        subSteps.stream().map(SubStep::canExecute).forEach(org.junit.Assert::assertTrue);
     }
 }

@@ -9,7 +9,7 @@ import org.jage.gpu.executors.ExternalExecutor;
 import org.jage.gpu.executors.ExternalExecutorRegistry;
 
 public abstract class SubStepAgent extends org.jage.agent.SimpleAgent {
-    Queue<SubStep> gpuAgentSubSteps = new LinkedList<>();
+    Queue<SubStep> subSteps = new LinkedList<>();
     protected ExternalExecutorRegistry externalExecutorRegistry;
 
     public SubStepAgent(AgentAddress address) {
@@ -28,7 +28,7 @@ public abstract class SubStepAgent extends org.jage.agent.SimpleAgent {
         if (step.canExecute()) {
             step.execute();
         } else {
-            gpuAgentSubSteps.add(step);
+            subSteps.add(step);
         }
     }
 
@@ -38,12 +38,13 @@ public abstract class SubStepAgent extends org.jage.agent.SimpleAgent {
      * @return true if all substeps are finished, false otherwise
      */
     public boolean resume() {
-        SubStep head = gpuAgentSubSteps.peek();
-        if (head != null && head.canExecute()) {
-            gpuAgentSubSteps.poll();
+        SubStep head = subSteps.peek();
+        while (head != null && head.canExecute()) {
+            subSteps.poll();
             head.execute();
+            head = subSteps.peek();
         }
-        return gpuAgentSubSteps.isEmpty();
+        return subSteps.isEmpty();
     }
 
     protected ExternalExecutor getGpuStep(String kernelName) {

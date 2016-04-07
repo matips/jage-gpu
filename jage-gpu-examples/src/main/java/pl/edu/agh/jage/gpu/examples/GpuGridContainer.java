@@ -11,8 +11,8 @@ import org.jage.gpu.executors.ExternalExecutorRegistry;
 import org.jage.gpu.workplace.SubStepAgentsWorkplace;
 import org.jage.platform.component.exception.ComponentException;
 
-import pl.edu.agh.jage.gpu.examples.integrals.agents.GPUGridFragment;
 import pl.edu.agh.jage.gpu.examples.config.Configuration;
+import pl.edu.agh.jage.gpu.examples.integrals.agents.GPUGridFragment;
 
 public class GpuGridContainer extends SubStepAgentsWorkplace {
 
@@ -55,7 +55,12 @@ public class GpuGridContainer extends SubStepAgentsWorkplace {
 
     @Override
     public boolean finish() throws ComponentException {
-        System.out.println(String.format("Simulation time: %f s", (System.currentTimeMillis() - startTime) / 1000.0));
+        String agentClassName = getAgents().stream()
+                .findAny()
+                .map(Object::getClass)
+                .map(Class::getCanonicalName)
+                .get();
+        System.out.println(String.format("%s, %f, %d", agentClassName, (System.currentTimeMillis() - startTime) / 1000.0, configuration.getxSize()*configuration.getySize()));
         return super.finish();
     }
 

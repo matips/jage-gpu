@@ -46,7 +46,12 @@ public class GridContainer extends ConnectedSimpleWorkplace {
 
     @Override
     public boolean finish() throws ComponentException {
-        System.out.println(String.format("Simulation time: %f s", (System.currentTimeMillis() - startTime) / 1000.0));
+        String agentClassName = getAgents().stream()
+                .findAny()
+                .map(Object::getClass)
+                .map(Class::getCanonicalName)
+                .get();
+        System.out.println(String.format("%s, %f, %d", agentClassName, (System.currentTimeMillis() - startTime) / 1000.0, configuration.getxSize()*configuration.getySize()));
         return super.finish();
     }
 }
