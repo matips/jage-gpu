@@ -13,8 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.bcel.util.ClassLoader;
 import org.jage.address.agent.AgentAddress;
 import org.jage.agent.AggregateActionService;
+import org.jage.gpu.agent.GpuAgent;
 import org.jage.gpu.agent.SubStep;
-import org.jage.gpu.agent.SubStepAgent;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.jocl.JoclGpu;
 import org.jage.gpu.executors.ExternalExecutor;
@@ -42,7 +42,7 @@ public class SubStepAgentsWorkplaceTest {
     public void integralTestsOnGpu() throws Exception {
         final int numberOfSteps = 40;
         GpuExecutorRegistry externalExecutorRegistry = new GpuExecutorRegistry();
-        SubStepAgent[] subStepAgents = new SubStepAgent[20];
+        GpuAgent[] subStepAgents = new GpuAgent[20];
         double[] expectedResults = new double[20];
         double[] tempSum = new double[20];
         AtomicInteger stepExecution = new AtomicInteger();
@@ -54,7 +54,7 @@ public class SubStepAgentsWorkplaceTest {
             expectedResults[i] = initial;
 
             final int finalI = i;
-            subStepAgents[i] = new SubStepAgent(mock(AgentAddress.class)) {
+            subStepAgents[i] = new GpuAgent(mock(AgentAddress.class)) {
                 ExternalExecutor simpleAddingOnGpu;
 
                 @Override

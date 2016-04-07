@@ -17,7 +17,7 @@ public class SubStepAgentTest {
         SubStep subStepMock = mock(SubStep.class);
 
         when(subStepMock.canExecute()).thenReturn(false);
-        SubStepAgent subStepAgent = new SubStepAgent(mock(AgentAddress.class)) {
+        GpuAgent subStepAgent = new GpuAgent(mock(AgentAddress.class)) {
             @Override
             public void step() {
                 postponeStep(subStepMock);
@@ -47,7 +47,7 @@ public class SubStepAgentTest {
         SubStep subStepMock = mock(SubStep.class);
 
         when(subStepMock.canExecute()).thenReturn(true);
-        SubStepAgent subStepAgent = new SubStepAgent(mock(AgentAddress.class)) {
+        GpuAgent subStepAgent = new GpuAgent(mock(AgentAddress.class)) {
             @Override
             public void step() {
                 postponeStep(subStepMock);
@@ -55,6 +55,7 @@ public class SubStepAgentTest {
         };
         subStepAgent.initialize(externalExecutorRegistryMock);
         subStepAgent.step();
+        subStepAgent.resume();
         verify(subStepMock).execute();
         assertTrue(subStepAgent.resume());
 
@@ -66,7 +67,7 @@ public class SubStepAgentTest {
         ExternalExecutor gpuExecutorMock = mock(ExternalExecutor.class);
         when(externalExecutorRegistryMock.get("testName")).thenReturn(gpuExecutorMock);
 
-        SubStepAgent subStepAgent = new SubStepAgent(mock(AgentAddress.class)) {
+        GpuAgent subStepAgent = new GpuAgent(mock(AgentAddress.class)) {
             @Override
             public void step() {
                 ExternalExecutor gpuExecutor = getGpuStep("testName");
