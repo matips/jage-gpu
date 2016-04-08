@@ -48,32 +48,39 @@ class GpuExecution {
 
         @Override
         public SubStep build(KernelCallBack callBack) {
-            return new SubStep() {
-                @Override
-                public void execute() {
-                    callBack.execute(new GpuReader() {
-                        int doubleIndex = 0;
-                        int intIndex = 0;
-
-                        @Override
-                        public double readDouble() {
-                            return doublesResults[doubleIndex++][rowIndex];
-                        }
-
-                        @Override
-                        public double readInt() {
-                            return intResults[intIndex++][rowIndex];
-                        }
-                    });
-                }
-
-                @Override
-                public boolean canExecute() {
-                    return isFinished;
-                }
-            };
+            return new GpuSubStep(callBack);
         }
 
+        private class GpuSubStep implements SubStep {
+            private final KernelCallBack callBack;
+
+            public GpuSubStep(KernelCallBack callBack) {
+                this.callBack = callBack;
+            }
+
+            @Override
+            public void execute() {
+                callBack.execute(new GpuReader() {
+                    int doubleIndex = 0;
+                    int intIndex = 0;
+
+                    @Override
+                    public double readDouble() {
+                        return doublesResults[doubleIndex++][rowIndex];
+                    }
+
+                    @Override
+                    public double readInt() {
+                        return intResults[intIndex++][rowIndex];
+                    }
+                });
+            }
+
+            @Override
+            public boolean canExecute() {
+                return isFinished;
+            }
+        }
     }
 
     public GpuExecution(List<KernelArgument> kernelArguments) {
