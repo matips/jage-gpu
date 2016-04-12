@@ -9,7 +9,6 @@ __kernel void addingPos(
     __global double* result
     )
 {
-
     int globalIndex = get_global_id(0);
     if (globalIndex < height){
         result[globalIndex] = current_sum[globalIndex] + (position1[globalIndex] + position2[globalIndex])* step[globalIndex] ;

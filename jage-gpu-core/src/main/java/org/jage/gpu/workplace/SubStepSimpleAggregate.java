@@ -9,28 +9,30 @@ import java.util.stream.Collectors;
 import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.agent.ISimpleAgent;
+import org.jage.agent.SimpleAggregate;
 import org.jage.gpu.agent.SubStepAgent;
 import org.jage.gpu.executors.ExternalExecutorRegistry;
 import org.jage.property.PropertyField;
 import org.jage.workplace.SimpleWorkplace;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SubStepAgentsWorkplace extends SimpleWorkplace {
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(SubStepAgentsWorkplace.class);
+public class SubStepSimpleAggregate extends SimpleAggregate {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubStepSimpleAggregate.class);
     protected ExternalExecutorRegistry externalExecutorRegistry;
 
-    public SubStepAgentsWorkplace(AgentAddress address) {
+    public SubStepSimpleAggregate(AgentAddress address) {
         super(address);
     }
 
-    public SubStepAgentsWorkplace(AgentAddressSupplier supplier) {
+    public SubStepSimpleAggregate(AgentAddressSupplier supplier) {
         super(supplier);
     }
 
     protected void executeStepsOnAgents() {
 
-        SubStepAgentsWorkplace.this.agents.values().forEach(ISimpleAgent::step);
-        List<SubStepAgent> remainSubStepAgents = SubStepAgentsWorkplace.this.agents.values().stream()
+        agents.values().forEach(ISimpleAgent::step);
+        List<SubStepAgent> remainSubStepAgents = agents.values().stream()
                 .filter(agent -> agent instanceof SubStepAgent)
                 .map(agent -> (SubStepAgent) agent)
                 .collect(Collectors.toList());
@@ -51,7 +53,6 @@ public class SubStepAgentsWorkplace extends SimpleWorkplace {
     public void step() {
         this.withReadLock(this::executeStepsOnAgents);
         this.getActionService().processActions();
-        incrementStep();
         this.notifyMonitorsForChangedProperties();
     }
 
@@ -63,23 +64,6 @@ public class SubStepAgentsWorkplace extends SimpleWorkplace {
                 .findAny()
                 .get();
         stepField.setAccessible(true);
-    }
-
-    /**
-     * This is workaround, because for unknown reason SimpleWorkplace#step is private and incremented only in SimpleWorkplace#step() witch I want to overwrite
-     * todo: propose change in jAge core
-     */
-    public void incrementStep() {
-        try {
-            stepField.setLong(this, getStep() + 1);
-        } catch (IllegalAccessException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public long getStep() {
-        return super.getStep();
     }
 
     public void setExternalExecutorRegistry(ExternalExecutorRegistry externalExecutorRegistry) {
