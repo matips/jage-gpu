@@ -21,8 +21,6 @@
 
     <component name="foramConfig" class="pl.edu.agh.jage.gpu.examples.config.Configuration"/>
 
-    <component name="joclGpu" class="org.jage.gpu.binding.jocl.JoclGpu"/>
-
     <block name="oceanFragmentContainers">
         <list name="oceanFragmentContainers">
             <multiple count="1">

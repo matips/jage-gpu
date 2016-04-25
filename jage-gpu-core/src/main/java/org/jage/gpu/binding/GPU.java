@@ -6,4 +6,5 @@ import java.util.Set;
 
 public interface GPU {
     Kernel buildKernel(File sourceFile, String kernelName, Set<String> inArguments, Set<String> outArguments) throws IOException;
+    Kernel buildKernel(String kernelFileContent, String kernelName, Set<String> inArguments, Set<String> outArguments) throws IOException;
 }

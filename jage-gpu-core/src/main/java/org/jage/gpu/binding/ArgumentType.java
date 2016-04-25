@@ -4,12 +4,30 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum ArgumentType {
-    DOUBLE_ARRAY("double*"),FLOAT_ARRAY("float*"),CHAR_ARRAY("char*"),INT_ARRAY("uint*"),SHORT("ushort"),IMAGE_2D("image2d_t"), INT("uint");
+    DOUBLE_ARRAY(true, "double*"),
+    FLOAT_ARRAY(true, "float*"),
+    CHAR_ARRAY(true, "char*"),
+    INT_ARRAY(true, "uint*"),
+
+    DOUBLE(false, "double"),
+    FLOAT(false, "float"),
+    CHAR(false, "char"),
+    SHORT(false, "ushort"),
+    INT(false, "uint"),
+
+    IMAGE_2D(false, "image2d_t");
 
     private final List<String> names;
+    private final boolean array;
 
-    ArgumentType(String... cNames) {
+    ArgumentType(boolean array, String... cNames) {
+        this.array = array;
         this.names = Arrays.asList(cNames);
+    }
+
+    @Override
+    public String toString() {
+        return names.get(0);
     }
 
     public static ArgumentType fromName(String cTypeName) {
@@ -18,4 +36,9 @@ public enum ArgumentType {
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("Cannot parse type " + cTypeName));
     }
+
+    public boolean isArray() {
+        return array;
+    }
+
 }
