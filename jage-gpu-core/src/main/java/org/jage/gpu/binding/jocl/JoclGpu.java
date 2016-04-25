@@ -112,12 +112,10 @@ public class JoclGpu implements GPU {
     }
 
     @Override
-    public Kernel buildKernel(File sourceFile, String kernelName, Set<String> inArguments, Set<String> outArguments) throws IOException {
-        // Create the program from the source code
-        String programSource = FileUtils.readFileToString(sourceFile);
+    public Kernel buildKernel(String kernelFileContent, String kernelName, Set<String> inArguments, Set<String> outArguments) throws IOException {
         int[] errorCode = new int[1];
-        cl_program program = clCreateProgramWithSource(context, 1, new String[] { programSource }, null, errorCode);
-        checkCreateProgramError(errorCode[0], sourceFile.getName());
+        cl_program program = clCreateProgramWithSource(context, 1, new String[] { kernelFileContent }, null, errorCode);
+        checkCreateProgramError(errorCode[0], kernelName);
         this.createdPrograms.add(program);
 
         // Build the program
@@ -130,6 +128,15 @@ public class JoclGpu implements GPU {
         return new JOCLKernel(this, kernel, kernelName, inArguments, outArguments);
     }
 
+    @Override
+    public Kernel buildKernel(File sourceFile, String kernelName, Set<String> inArguments, Set<String> outArguments) throws IOException {
+        // Create the program from the source code
+        String programSource = FileUtils.readFileToString(sourceFile);
+        return buildKernel(programSource, kernelName, inArguments, outArguments);
+
+    }
+
+    //todo: extract to helper class
     private void checkCreateProgramError(int errorCode, String name) {
         switch (errorCode) {
         case 0:

@@ -9,6 +9,7 @@ import org.apache.bcel.util.ClassLoader;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelExecution;
 import org.jage.gpu.binding.jocl.JoclGpu;
+import org.jage.gpu.binding.jocl.kernelAsFunction.KernelAsFunctionJoclGpu;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
@@ -16,6 +17,7 @@ import com.google.common.collect.Sets;
 public class GpuExecutorTest {
 
     private File kernelSource = new File(ClassLoader.getSystemResource("simpleAddingTest.cl").getFile());
+    private File argumentsTestKernelAsFunction = new File(ClassLoader.getSystemResource("argumentsTestKernelAsFunction.cl").getFile());
     private File simpleAddingInPlaceTestSource = new File(ClassLoader.getSystemResource("simpleAddingInPlaceTest.cl").getFile());
 
     @Test
@@ -23,6 +25,29 @@ public class GpuExecutorTest {
         JoclGpu joclGpu = new JoclGpu();
         joclGpu.initialize();
         Kernel kernel = joclGpu.buildKernel(kernelSource, "simpleAddingTest", Sets.newHashSet("a1", "a2"), Sets.newHashSet("result"));
+        KernelExecution kernelExecution = kernel.newExecution(20);
+        Random random = new Random();
+        double[][] arrays = new double[3][];
+        for (int i = 0; i < 3; i++) {
+            arrays[i] = new double[20];
+        }
+        for (int i = 0; i < 20; i++) {
+            arrays[0][i] = random.nextDouble();
+            arrays[1][i] = random.nextDouble();
+        }
+        for (int i = 0; i < 3; i++) {
+            kernelExecution.bindParameter(kernel.getArguments().get(i + 1), arrays[i]);
+        }
+        kernelExecution.execute();
+        for (int i = 0; i < 20; i++) {
+            assertEquals(arrays[0][i] + arrays[1][i], arrays[2][i], 0.00001);
+        }
+    }
+    @Test
+    public void testArgumentsTestKernelAsFunction() throws Exception {
+        KernelAsFunctionJoclGpu joclGpu = new KernelAsFunctionJoclGpu();
+        joclGpu.initialize();
+        Kernel kernel = joclGpu.buildKernel(argumentsTestKernelAsFunction, "adding", Sets.newHashSet("a1", "a2"), Sets.newHashSet("result"));
         KernelExecution kernelExecution = kernel.newExecution(20);
         Random random = new Random();
         double[][] arrays = new double[3][];
