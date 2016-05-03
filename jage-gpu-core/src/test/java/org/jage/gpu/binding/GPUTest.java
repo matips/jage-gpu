@@ -57,7 +57,7 @@ public class GPUTest {
 
     }
 
-    @Test(expected = org.jocl.CLException.class)
+    @Test(expected = IllegalStateException.class)
     public void testInvalidShoutdown() throws Exception {
         JoclGpu instance = new JoclGpu();
         instance.initialize();
