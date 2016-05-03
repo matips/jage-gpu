@@ -1,3 +1,5 @@
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+
 __kernel void sine_wave(__global float4* pos, unsigned int width, unsigned int height, float time)
 {
     unsigned int x = get_global_id(0);

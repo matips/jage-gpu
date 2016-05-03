@@ -1,3 +1,5 @@
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+
 __kernel void simpleAddingTest(
     unsigned int height,
     __global double* a1,
