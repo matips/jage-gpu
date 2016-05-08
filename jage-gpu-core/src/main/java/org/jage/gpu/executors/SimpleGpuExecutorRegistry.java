@@ -20,6 +20,11 @@ public class SimpleGpuExecutorRegistry implements ExternalExecutorRegistry {
     private final String allSources;
     private final SimpleGPU simpleGPU;
 
+    public SimpleGpuExecutorRegistry(String sourceFiles) throws IOException {
+        this(new String[] {
+                sourceFiles }); //jAge xml configuration does not accept (String... sourceFiles) constructor as single String construction: this method is work around
+    }
+
     public SimpleGpuExecutorRegistry(String... sourceFiles) throws IOException {
         simpleGPU = new SimpleGPU();
         allSources = Arrays.stream(sourceFiles)
