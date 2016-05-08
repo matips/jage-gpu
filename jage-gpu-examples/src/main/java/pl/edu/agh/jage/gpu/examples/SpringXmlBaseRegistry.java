@@ -4,6 +4,9 @@ import org.jage.gpu.executors.ExternalExecutor;
 import org.jage.gpu.executors.ExternalExecutorRegistry;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * This class helps to creat ExternalExecutorRegistry from given spring file .
+ */
 public class SpringXmlBaseRegistry implements ExternalExecutorRegistry {
 
     private final ClassPathXmlApplicationContext classPathXmlApplicationContext;

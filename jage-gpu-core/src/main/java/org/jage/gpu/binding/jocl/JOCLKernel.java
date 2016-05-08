@@ -18,6 +18,9 @@ import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_kernel;
 
+/**
+ * Basic Kernel implementation. Expect user to configure witch arguments are in and witch are out arguments.
+ */
 public class JOCLKernel implements Kernel {
     private static final Logger LOGGER = Logger.getLogger(JOCLKernel.class);
     private final cl_kernel kernel;

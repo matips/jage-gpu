@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
@@ -20,33 +19,35 @@ import org.jage.gpu.binding.jocl.JoclGpu;
 import org.jage.gpu.executors.ExternalExecutor;
 import org.jage.gpu.executors.ExternalExecutorRegistry;
 import org.jage.gpu.executors.GpuExecutorRegistry;
+import org.jage.gpu.executors.SimpleGpuExecutorRegistry;
 import org.jage.platform.component.exception.ComponentException;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
 
 public class SubStepAgentsWorkplaceTest {
-    private final static File kernelSource = new File(ClassLoader.getSystemResource("simpleAddingTest.cl").getFile());
+    public static final String SOURCE_FILENAME = "simpleAddingTest.cl";
+    private final static File kernelSource = new File(ClassLoader.getSystemResource(SOURCE_FILENAME).getFile());
+
     private Kernel kernel;
 
-    @Before
-    public void setUp() throws IOException {
+    @Test
+    public void integralTestsOnGpu() throws Exception {
         JoclGpu joclGpu = new JoclGpu();
         joclGpu.initialize();
         kernel = joclGpu.buildKernel(kernelSource, "simpleAddingTest", Sets.newHashSet("a1", "a2"), Sets.newHashSet("result"));
 
-    }
-
-    @Test
-    public void integralTestsOnGpu() throws Exception {
         final int numberOfSteps = 40;
         GpuExecutorRegistry externalExecutorRegistry = new GpuExecutorRegistry();
+        externalExecutorRegistry.setKernels(Collections.singletonList(kernel));
+
+    }
+
+    public void test(int numberOfSteps, ExternalExecutorRegistry externalExecutorRegistry, final String kernelName) {
         GpuAgent[] subStepAgents = new GpuAgent[20];
         double[] expectedResults = new double[20];
         double[] tempSum = new double[20];
         AtomicInteger stepExecution = new AtomicInteger();
-        externalExecutorRegistry.setKernels(Collections.singletonList(kernel));
         Random random = new Random();
 
         for (int i = 0; i < 20; i++) {
@@ -60,7 +61,7 @@ public class SubStepAgentsWorkplaceTest {
                 @Override
                 public void initialize(ExternalExecutorRegistry externalExecutorRegistry) {
                     super.initialize(externalExecutorRegistry);
-                    simpleAddingOnGpu = getGpuStep("simpleAddingTest");
+                    simpleAddingOnGpu = getGpuStep(kernelName);
                 }
 
                 double sum = initial;
@@ -101,5 +102,12 @@ public class SubStepAgentsWorkplaceTest {
         }
         assertEquals(numberOfSteps * 20, stepExecution.get());
         assertEquals(numberOfSteps, instance.getStep());
+    }
+
+    @Test
+    public void integralTestsOnGpuWithSimpleGpuRegistry() throws Exception {
+        final int numberOfSteps = 40;
+        ExternalExecutorRegistry externalExecutorRegistry = new SimpleGpuExecutorRegistry(SOURCE_FILENAME);
+        test(numberOfSteps, externalExecutorRegistry, "adding");
     }
 }

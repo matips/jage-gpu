@@ -40,5 +40,8 @@ public enum ArgumentType {
     public boolean isArray() {
         return array;
     }
+    public boolean isPointer() {
+        return array; //in c pointers and arrays are identical
+    }
 
 }

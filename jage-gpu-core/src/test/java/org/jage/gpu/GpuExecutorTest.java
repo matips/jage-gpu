@@ -46,7 +46,6 @@ public class GpuExecutorTest {
     @Test
     public void testArgumentsTestKernelAsFunction() throws Exception {
         KernelAsFunctionJoclGpu joclGpu = new KernelAsFunctionJoclGpu();
-        joclGpu.initialize();
         Kernel kernel = joclGpu.buildKernel(argumentsTestKernelAsFunction, "adding", Sets.newHashSet("a1", "a2"), Sets.newHashSet("result"));
         KernelExecution kernelExecution = kernel.newExecution(20);
         Random random = new Random();

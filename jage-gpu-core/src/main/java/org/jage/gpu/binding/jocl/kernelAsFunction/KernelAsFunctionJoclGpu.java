@@ -15,14 +15,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This implementation of GPU accepts functions sources witch operated on one data row.
- * It wraps function to kernel.
- *
+ * It wraps function to multirow kernel.
+ * <p>
  * WARNING: Passing arrays is not supported!
+ * </p>
  */
 public class KernelAsFunctionJoclGpu implements GPU {
     private static final Logger LOGGER = LoggerFactory.getLogger(KernelAsFunctionJoclGpu.class);
-    private final JoclGpu joclGpu = new JoclGpu();
-    public static final String KERNEL_TEMPLATE = "__kernel void %s(\n"
+    protected final JoclGpu joclGpu = new JoclGpu(true);
+    private static final String KERNEL_TEMPLATE = "__kernel void %s(\n"
             + "%s\n"
             + "    )\n"
             + "{\n"
@@ -33,8 +34,7 @@ public class KernelAsFunctionJoclGpu implements GPU {
             + "    }\n"
             + "}";
 
-    public void initialize() throws IOException {
-        joclGpu.initialize();
+    public KernelAsFunctionJoclGpu() throws IOException {
     }
 
     @Override
@@ -56,7 +56,7 @@ public class KernelAsFunctionJoclGpu implements GPU {
                 + "\n\n"
                 + wrapper;
 
-        LOGGER.info("Generated kernel for {} is:\n {}", functionName, fullKernelSource );
+        LOGGER.info("Generated kernel for {} is:\n {}", functionName, fullKernelSource);
         return joclGpu.buildKernel(fullKernelSource, generatedKernelName(functionName), inArguments, outArguments);
     }
 
@@ -64,7 +64,7 @@ public class KernelAsFunctionJoclGpu implements GPU {
         return "generated_kernel_for_" + functionName;
     }
 
-    public String generateWrapper(String functionName, Kernel baseFunction) {
+    private String generateWrapper(String functionName, Kernel baseFunction) {
 
         String kernelArgumentsText = "unsigned int height";
         String functionCallArguments = "";

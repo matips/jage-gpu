@@ -3,6 +3,7 @@ package org.jage.gpu.binding;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,6 +55,14 @@ public class GPUTest {
         assertFalse(arguments.get(2).isOut());
         assertTrue(arguments.get(3).isOut());
         assertTrue(arguments.get(4).isOut());
+
+    }
+
+    @Test(expected = org.jocl.CLException.class)
+    public void testInvalidKernelName() throws IOException {
+        JoclGpu instance = new JoclGpu(true);
+
+        instance.buildKernel(kernelSource, "invalidKernelName", Sets.newHashSet("first", "fourth"), Sets.newHashSet("fifth", "fourth"));
 
     }
 

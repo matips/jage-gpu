@@ -1,4 +1,4 @@
-package org.jage.gpu.binding;
+package org.jage.gpu.binding.jocl.kernelAsFunction;
 
 import static org.junit.Assert.*;
 
@@ -6,7 +6,11 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.bcel.util.ClassLoader;
-import org.jage.gpu.binding.jocl.kernelAsFunction.KernelAsFunctionJoclGpu;
+import org.jage.gpu.binding.ArgumentAccessQualifier;
+import org.jage.gpu.binding.ArgumentType;
+import org.jage.gpu.binding.Kernel;
+import org.jage.gpu.binding.KernelArgument;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
@@ -18,7 +22,6 @@ public class KernelAsFunctionGPUTest {
     @Test
     public void testBuildKernel() throws Exception {
         KernelAsFunctionJoclGpu instance = new KernelAsFunctionJoclGpu();
-        instance.initialize();
 
         Kernel sampleKernel = instance.buildKernel(kernelSource, "adding", Sets.newHashSet("a1", "a2"), Sets.newHashSet("result"));
 
@@ -30,9 +33,9 @@ public class KernelAsFunctionGPUTest {
         assertEquals("result", arguments.get(3).getArgumentName());
 
         for (int i = 0; i < 4; i++) {
-            assertEquals(ArgumentAccessQualifier.NONE, arguments.get(i).getAccessQualifier());
+            Assert.assertEquals(ArgumentAccessQualifier.NONE, arguments.get(i).getAccessQualifier());
         }
-        assertEquals(ArgumentType.INT, arguments.get(0).getType());
+        Assert.assertEquals(ArgumentType.INT, arguments.get(0).getType());
         for (int i = 1; i < 4; i++) {
             assertEquals(ArgumentType.DOUBLE_ARRAY, arguments.get(i).getType());
         }

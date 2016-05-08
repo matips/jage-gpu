@@ -47,6 +47,19 @@ public class JoclGpu implements GPU {
     private List<cl_program> createdPrograms = new ArrayList<>();
 
     /**
+     *
+     * @param initalize if true GPU is initialized in constructor
+     * @throws IOException
+     */
+    public JoclGpu(boolean initalize) throws IOException {
+        if (initalize)
+            this.initialize();
+    }
+
+    public JoclGpu() {
+    }
+
+    /**
      * Initialize a default OpenCL context, command queue, program and kernel
      */
     public void initialize() throws IOException {
@@ -127,7 +140,7 @@ public class JoclGpu implements GPU {
     public Kernel buildKernel(String kernelFileContent, String kernelName, Set<String> inArguments, Set<String> outArguments) throws IOException {
         try {
             readLock.lock();
-            if (wasShutdowned.get()){
+            if (wasShutdowned.get()) {
                 throw new IllegalStateException("GPU was shutdown, cannot execute operations");
             }
             int[] errorCode = new int[1];
