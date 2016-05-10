@@ -42,7 +42,7 @@ class GpuExecution {
 
         @Override
         public ExternalStepBuilder putArg(int argument) {
-            doubleArguments.putDouble(rowIndex, intIndex++, argument);
+            intArguments.putInt(rowIndex, intIndex++, argument);
             return this;
         }
 
@@ -88,9 +88,10 @@ class GpuExecution {
         this.intArguments = new IntArguments(filterArguments(kernelArguments, ArgumentType.INT_ARRAY));
     }
 
-    private List<KernelArgument> filterArguments(List<KernelArgument> kernelArguments, ArgumentType doubleArray) {
-        return kernelArguments.stream().filter(kernelArgument -> kernelArgument.getType().equals(doubleArray)).collect(
-                Collectors.toList());
+    private List<KernelArgument> filterArguments(List<KernelArgument> kernelArguments, ArgumentType argumentType) {
+        return kernelArguments.stream()
+                .filter(kernelArgument -> kernelArgument.getType().equals(argumentType))
+                .collect(Collectors.toList());
     }
 
     public void flush(Kernel kernel) {

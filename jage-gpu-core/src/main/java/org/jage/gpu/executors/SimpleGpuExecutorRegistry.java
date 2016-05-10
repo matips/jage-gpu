@@ -1,16 +1,15 @@
 package org.jage.gpu.executors;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
+import org.jage.gpu.binding.jocl.AutoConfigGPU;
 import org.jage.gpu.binding.jocl.kernelAsFunction.SimpleGPU;
 import org.jage.gpu.helpers.ThrowingFunction;
+import org.jage.gpu.helpers.Utils;
 
 /**
  * Allows to create gpuExecutor without explicit defining in/out arguments. Accepts multiple source files
@@ -18,7 +17,7 @@ import org.jage.gpu.helpers.ThrowingFunction;
 public class SimpleGpuExecutorRegistry implements ExternalExecutorRegistry {
     private Map<String, ExternalExecutor> executors = new HashMap<>();
     private final String allSources;
-    private final SimpleGPU simpleGPU;
+    private final AutoConfigGPU simpleGPU;
 
     public SimpleGpuExecutorRegistry(String sourceFiles) throws IOException {
         this(new String[] {
@@ -26,18 +25,13 @@ public class SimpleGpuExecutorRegistry implements ExternalExecutorRegistry {
     }
 
     public SimpleGpuExecutorRegistry(String... sourceFiles) throws IOException {
-        simpleGPU = new SimpleGPU();
+        this(new SimpleGPU(), sourceFiles);
+
+    }
+    public SimpleGpuExecutorRegistry(AutoConfigGPU simpleGPU, String... sourceFiles){
+        this.simpleGPU = simpleGPU;
         allSources = Arrays.stream(sourceFiles)
-                .map(ClassLoader::getSystemResource)
-                .map(URL::getFile)
-                .map(File::new)
-                .map(file -> {
-                    try {
-                        return FileUtils.readFileToString(file);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .map((ThrowingFunction<String, String>) Utils::getResourceAsString)
                 .collect(Collectors.joining("\n\n"));
 
     }

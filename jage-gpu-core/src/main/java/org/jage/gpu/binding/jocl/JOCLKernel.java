@@ -46,7 +46,7 @@ public class JOCLKernel implements Kernel {
         for (int paramNumber = 0; paramNumber < numArgs; paramNumber++) {
             String argumentName = getArgumentName(paramNumber);
             ArgumentAccessQualifier accessQualifier = getArgumentAccessQualifierCode(paramNumber);
-            ArgumentType typeName = getArguementType(paramNumber);
+            ArgumentType typeName = getArgumentType(paramNumber);
             boolean isIn = inArguments.contains(argumentName);
             boolean isOut = outArguments.contains(argumentName);
             LOGGER.info("Argument " + argumentName + " isIn = " + isIn);
@@ -71,7 +71,7 @@ public class JOCLKernel implements Kernel {
         return ArgumentAccessQualifier.fromCode(accessQualifierCode);
     }
 
-    private ArgumentType getArguementType(int argumentNumber) {
+    private ArgumentType getArgumentType(int argumentNumber) {
         long sizeArray[] = { 0 };
         byte paramValueCharArray[] = new byte[1024];
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_NAME, 0, null, sizeArray);
