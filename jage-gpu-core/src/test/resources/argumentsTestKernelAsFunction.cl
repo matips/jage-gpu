@@ -10,3 +10,14 @@ __kernel void adding(
 }
 
 
+
+__kernel void multipleInts(
+    unsigned int a1,
+    unsigned int a2,
+    __global unsigned int* result
+)
+{
+    *result = a1*a2;
+}
+
+

@@ -137,7 +137,7 @@ public class JoclGpu implements GPU {
     }
 
     @Override
-    public Kernel buildKernel(String kernelFileContent, String kernelName, Set<String> inArguments, Set<String> outArguments) throws IOException {
+    public JOCLKernel buildKernel(String kernelFileContent, String kernelName, Set<String> inArguments, Set<String> outArguments) throws IOException {
         try {
             readLock.lock();
             if (wasShutdowned.get()) {

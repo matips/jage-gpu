@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
@@ -99,6 +100,70 @@ public class SubStepAgentsWorkplaceTest {
 
         for (int i = 0; i < 20; i++) {
             assertEquals(expectedResults[i], tempSum[i], 1e-10);
+        }
+        assertEquals(numberOfSteps * 20, stepExecution.get());
+        assertEquals(numberOfSteps, instance.getStep());
+    }
+    @Test
+    public void testIntMultplication() throws IOException {
+        final int numberOfSteps = 40;
+        ExternalExecutorRegistry externalExecutorRegistry = new SimpleGpuExecutorRegistry("argumentsTestKernelAsFunction.cl");
+
+        GpuAgent[] subStepAgents = new GpuAgent[20];
+        int[] expectedResults = new int[20];
+        int[] tempResults = new int[20];
+        AtomicInteger stepExecution = new AtomicInteger();
+        Random random = new Random();
+
+        for (int i = 0; i < 20; i++) {
+            int initial = random.nextInt();
+            expectedResults[i] = initial;
+
+            final int finalI = i;
+            subStepAgents[i] = new GpuAgent(mock(AgentAddress.class)) {
+                ExternalExecutor simpleAddingOnGpu;
+
+                @Override
+                public void initialize(ExternalExecutorRegistry externalExecutorRegistry) {
+                    super.initialize(externalExecutorRegistry);
+                    simpleAddingOnGpu = getGpuStep("multipleInts");
+                }
+
+                int sum = initial;
+
+                @Override
+                public void step() {
+                    int next = random.nextInt() % 300 + 1;
+                    expectedResults[finalI] *= next;
+                    SubStep subStep = simpleAddingOnGpu.createStep()
+                            .putArg(sum)
+                            .putArg(next)
+                            .build(gpuReader -> sum = tempResults[finalI] = gpuReader.readInt());
+                    postponeStep(subStep);
+                    stepExecution.incrementAndGet();
+                }
+
+            };
+            subStepAgents[i].initialize(externalExecutorRegistry);
+
+        }
+        SubStepAgentsWorkplace instance = new SubStepAgentsWorkplace(mock(AgentAddress.class)) {
+            @Override
+            public void init() throws ComponentException {
+                setExternalExecutorRegistry(externalExecutorRegistry);
+                Arrays.asList(subStepAgents).forEach(this::add);
+                setActionService(mock(AggregateActionService.class));
+            }
+
+        };
+        instance.setExternalExecutorRegistry(externalExecutorRegistry);
+        instance.init();
+        for (int i = 0; i < numberOfSteps; i++) {
+            instance.step();
+        }
+
+        for (int i = 0; i < 20; i++) {
+            assertEquals(expectedResults[i], tempResults[i], 1e-10);
         }
         assertEquals(numberOfSteps * 20, stepExecution.get());
         assertEquals(numberOfSteps, instance.getStep());

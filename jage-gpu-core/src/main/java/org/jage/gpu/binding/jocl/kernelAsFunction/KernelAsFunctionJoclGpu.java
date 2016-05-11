@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.GPU;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
@@ -72,7 +71,7 @@ public class KernelAsFunctionJoclGpu implements GPU {
         for (KernelArgument functionArgument : baseFunction.getArguments()) {
             kernelArgumentsText += ",\n";
             kernelArgumentsText += "__global ";
-            kernelArgumentsText += toArray(functionArgument.getType());
+            kernelArgumentsText += (functionArgument.getType().isPointer()) ? functionArgument.getType() : functionArgument.getType().toArray();
             kernelArgumentsText += functionArgument.getArgumentName();
 
             if (functionCallArguments.length() > 0) {
@@ -85,14 +84,6 @@ public class KernelAsFunctionJoclGpu implements GPU {
             functionCallArguments += "[globalIndex]";
         }
         return String.format(KERNEL_TEMPLATE, generatedKernelName(functionName), kernelArgumentsText, functionName, functionCallArguments);
-    }
-
-    private ArgumentType toArray(ArgumentType argumentType) {
-        if (argumentType.isArray()) {
-            return argumentType;
-        } else {
-            return ArgumentType.fromName(argumentType.toString().concat("*"));
-        }
     }
 
 }

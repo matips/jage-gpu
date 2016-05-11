@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.bcel.util.ClassLoader;
 import org.jage.gpu.binding.ArgumentAccessQualifier;
-import org.jage.gpu.binding.ArgumentType;
+import org.jage.gpu.binding.jocl.JoclArgumentTypes;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.AutoConfigGPU;
@@ -39,9 +39,9 @@ public class SimpleGPUTest {
         for (int i = 0; i < 4; i++) {
             assertEquals(ArgumentAccessQualifier.NONE, arguments.get(i).getAccessQualifier());
         }
-        assertEquals(ArgumentType.INT, arguments.get(0).getType());
+        assertEquals(JoclArgumentTypes.INT, arguments.get(0).getType());
         for (int i = 1; i < 4; i++) {
-            assertEquals(ArgumentType.DOUBLE_ARRAY, arguments.get(i).getType());
+            assertEquals(JoclArgumentTypes.DOUBLE_ARRAY, arguments.get(i).getType());
         }
 
         assertFalse(arguments.get(0).isIn());

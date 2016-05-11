@@ -1,7 +1,5 @@
 package org.jage.gpu.executors.arguments;
 
-import static org.jage.gpu.binding.ArgumentType.DOUBLE_ARRAY;
-
 import java.util.List;
 
 import org.jage.gpu.binding.KernelArgument;
@@ -12,7 +10,7 @@ public class IntArguments extends PrimitiveArguments<IntArrayList, int[]> {
     private IntArrayList[] in;
 
     public IntArguments(List<KernelArgument> arguments) {
-        super(arguments, DOUBLE_ARRAY, IntArrayList[]::new, IntArrayList::new, IntArrayList::toArray, int[]::new);
+        super(arguments, int[].class, IntArrayList[]::new, IntArrayList::new, IntArrayList::toArray, int[]::new);
     }
 
     public void putInt(int rowIndex, int argumentIndex, int value) {

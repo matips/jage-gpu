@@ -33,7 +33,7 @@ public class JOCLKernelExecution implements KernelExecution {
             binded.forEach((argument, memoryAndPointer) -> {
                         if (argument.isOut()) {
                             clEnqueueReadBuffer(commandQueue, memoryAndPointer.memory, CL_TRUE, 0,
-                                    elementsSize * Sizeof.cl_double, memoryAndPointer.array,
+                                    elementsSize * memoryAndPointer.size, memoryAndPointer.array,
                                     0, null, null);
                         }
                         clReleaseMemObject(memoryAndPointer.memory);
@@ -45,10 +45,12 @@ public class JOCLKernelExecution implements KernelExecution {
     private class MemoryAndPointer {
         final cl_mem memory;
         final Pointer array;
+        final int size;
 
-        private MemoryAndPointer(cl_mem memory, Pointer array) {
+        private MemoryAndPointer(cl_mem memory, Pointer array, int size) {
             this.memory = memory;
             this.array = array;
+            this.size = size;
         }
 
     }
@@ -81,7 +83,7 @@ public class JOCLKernelExecution implements KernelExecution {
     @Override
     public void bindParameter(KernelArgument kernelArgument, int[] array) {
         assert array.length == elementsSize;
-        bindParameter(kernelArgument, Pointer.to(array), Sizeof.cl_double);
+        bindParameter(kernelArgument, Pointer.to(array), Sizeof.cl_int);
     }
 
     private void bindParameter(KernelArgument kernelArgument, Pointer pointerToArray, int subtypeSize) {
@@ -99,7 +101,7 @@ public class JOCLKernelExecution implements KernelExecution {
                 CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
                 subtypeSize * elementsSize, pointerToArray, null);
         clSetKernelArg(kernel, kernelArgument.getArgumentIndex(), Sizeof.cl_mem, Pointer.to(mem));
-        binded.put(kernelArgument, new MemoryAndPointer(mem, pointerToArray));
+        binded.put(kernelArgument, new MemoryAndPointer(mem, pointerToArray, subtypeSize));
     }
 
     private void bindOutParameter(KernelArgument kernelArgument, Pointer pointerToArray, int subtypeSize) {
@@ -108,7 +110,7 @@ public class JOCLKernelExecution implements KernelExecution {
                 CL_MEM_READ_WRITE,
                 subtypeSize * elementsSize, null, null);
         clSetKernelArg(kernel, kernelArgument.getArgumentIndex(), Sizeof.cl_mem, Pointer.to(mem));
-        binded.put(kernelArgument, new MemoryAndPointer(mem, pointerToArray));
+        binded.put(kernelArgument, new MemoryAndPointer(mem, pointerToArray, subtypeSize));
     }
 
     private void bindInOutParameter(KernelArgument kernelArgument, Pointer pointerToArray, int subtypeSize) {
@@ -117,7 +119,7 @@ public class JOCLKernelExecution implements KernelExecution {
                 CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
                 subtypeSize * elementsSize, kernelArgument.isIn() ? pointerToArray : null, null);
         clSetKernelArg(kernel, kernelArgument.getArgumentIndex(), Sizeof.cl_mem, Pointer.to(mem));
-        binded.put(kernelArgument, new MemoryAndPointer(mem, pointerToArray));
+        binded.put(kernelArgument, new MemoryAndPointer(mem, pointerToArray, subtypeSize));
     }
 }
 

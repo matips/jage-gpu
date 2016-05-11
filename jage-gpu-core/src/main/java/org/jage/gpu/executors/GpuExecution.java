@@ -10,7 +10,6 @@ import org.jage.gpu.ExternalStepBuilder;
 import org.jage.gpu.KernelCallBack;
 import org.jage.gpu.agent.GpuReader;
 import org.jage.gpu.agent.SubStep;
-import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.KernelExecution;
@@ -19,8 +18,9 @@ import org.jage.gpu.executors.arguments.IntArguments;
 
 class GpuExecution {
     private final DoubleArguments doubleArguments;
-    private final AtomicInteger argumentsRowsIndex = new AtomicInteger();
     private final IntArguments intArguments;
+
+    private final AtomicInteger argumentsRowsIndex = new AtomicInteger();
     private volatile boolean isFinished = false;
     private double[][] doublesResults;
     private int[][] intResults;
@@ -70,7 +70,7 @@ class GpuExecution {
                     }
 
                     @Override
-                    public double readInt() {
+                    public int readInt() {
                         return intResults[intIndex++][rowIndex];
                     }
                 });
@@ -84,13 +84,13 @@ class GpuExecution {
     }
 
     public GpuExecution(List<KernelArgument> kernelArguments) {
-        this.doubleArguments = new DoubleArguments(filterArguments(kernelArguments, ArgumentType.DOUBLE_ARRAY));
-        this.intArguments = new IntArguments(filterArguments(kernelArguments, ArgumentType.INT_ARRAY));
+        this.doubleArguments = new DoubleArguments(filterArguments(kernelArguments, double[].class));
+        this.intArguments = new IntArguments(filterArguments(kernelArguments, int[].class));
     }
 
-    private List<KernelArgument> filterArguments(List<KernelArgument> kernelArguments, ArgumentType argumentType) {
+    private List<KernelArgument> filterArguments(List<KernelArgument> kernelArguments, Class argumentType) {
         return kernelArguments.stream()
-                .filter(kernelArgument -> kernelArgument.getType().equals(argumentType))
+                .filter(kernelArgument -> kernelArgument.getType().is(argumentType))
                 .collect(Collectors.toList());
     }
 
