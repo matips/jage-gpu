@@ -12,6 +12,7 @@
     <modules>
         <module>jage-gpu-core</module>
         <module>jage-gpu-examples</module>
+        <module>jage-gpu-random</module>
     </modules>
 
     <properties>

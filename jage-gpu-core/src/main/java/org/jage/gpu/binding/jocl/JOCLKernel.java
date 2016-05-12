@@ -13,6 +13,8 @@ import org.jage.gpu.binding.ArgumentAccessQualifier;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.KernelExecution;
+import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.JoclPrimitiveArgumentTypes;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_kernel;
@@ -45,7 +47,7 @@ public class JOCLKernel implements Kernel {
         for (int paramNumber = 0; paramNumber < numArgs; paramNumber++) {
             String argumentName = getArgumentName(paramNumber);
             ArgumentAccessQualifier accessQualifier = getArgumentAccessQualifierCode(paramNumber);
-            JoclArgumentTypes typeName = getArgumentType(paramNumber);
+            JoclPrimitiveArgumentTypes typeName = getArgumentType(paramNumber);
             boolean isIn = inArguments.contains(argumentName);
             boolean isOut = outArguments.contains(argumentName);
             LOGGER.info("Argument " + argumentName + " isIn = " + isIn);
@@ -70,14 +72,14 @@ public class JOCLKernel implements Kernel {
         return ArgumentAccessQualifier.fromCode(accessQualifierCode);
     }
 
-    private JoclArgumentTypes getArgumentType(int argumentNumber) {
+    private JoclPrimitiveArgumentTypes getArgumentType(int argumentNumber) {
         long sizeArray[] = { 0 };
         byte paramValueCharArray[] = new byte[1024];
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_NAME, 0, null, sizeArray);
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_NAME, sizeArray[0], Pointer.to(paramValueCharArray), null);
         String typeName = new String(paramValueCharArray, 0, (int) sizeArray[0] - 1);
         LOGGER.info(String.format("%d kernel %s argument has type: %s", argumentNumber, kernelName, typeName));
-        return JoclArgumentTypes.fromName(typeName);
+        return JoclArgumentFactory.fromName(typeName);
     }
 
     private String getArgumentName(int argumentNumber) {

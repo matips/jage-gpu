@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.bcel.util.ClassLoader;
-import org.jage.gpu.binding.jocl.JoclArgumentTypes;
+import org.jage.gpu.binding.jocl.arguments.JoclPrimitiveArgumentTypes;
 import org.jage.gpu.binding.jocl.JoclGpu;
 import org.junit.Test;
 
@@ -39,11 +39,11 @@ public class GPUTest {
         assertEquals(ArgumentAccessQualifier.NONE, arguments.get(3).getAccessQualifier());
         assertEquals(ArgumentAccessQualifier.NONE, arguments.get(4).getAccessQualifier());
 
-        assertEquals(JoclArgumentTypes.FLOAT_ARRAY, arguments.get(0).getType());
-        assertEquals(JoclArgumentTypes.CHAR_ARRAY, arguments.get(1).getType());
-        assertEquals(JoclArgumentTypes.INT_ARRAY, arguments.get(2).getType());
-        assertEquals(JoclArgumentTypes.SHORT, arguments.get(3).getType());
-        assertEquals(JoclArgumentTypes.INT_ARRAY, arguments.get(4).getType());
+        assertEquals(JoclPrimitiveArgumentTypes.FLOAT_ARRAY, arguments.get(0).getType());
+        assertEquals(JoclPrimitiveArgumentTypes.CHAR_ARRAY, arguments.get(1).getType());
+        assertEquals(JoclPrimitiveArgumentTypes.INT_ARRAY, arguments.get(2).getType());
+        assertEquals(JoclPrimitiveArgumentTypes.SHORT, arguments.get(3).getType());
+        assertEquals(JoclPrimitiveArgumentTypes.INT_ARRAY, arguments.get(4).getType());
 
         assertTrue(arguments.get(0).isIn());
         assertFalse(arguments.get(1).isIn());
