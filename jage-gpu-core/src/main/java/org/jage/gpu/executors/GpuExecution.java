@@ -73,6 +73,11 @@ class GpuExecution {
                     public int readInt() {
                         return intResults[intIndex++][rowIndex];
                     }
+
+                    @Override
+                    public boolean readBoolean() {
+                        return readInt() != 0; //there is no boolean type in c - there is int only
+                    }
                 });
             }
 

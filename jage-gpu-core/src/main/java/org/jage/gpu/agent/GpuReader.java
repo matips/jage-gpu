@@ -4,4 +4,6 @@ public interface GpuReader {
     double readDouble() ;
 
     int readInt();
+
+    boolean readBoolean();
 }
