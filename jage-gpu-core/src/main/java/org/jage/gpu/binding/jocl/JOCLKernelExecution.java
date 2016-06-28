@@ -76,17 +76,13 @@ public class JOCLKernelExecution implements KernelExecution {
 
     }
 
-    JoclArgumentType<int[]> INT_ARRAY = JoclArgumentFactory.fromClass(int[].class);
-    JoclArgumentType<double[]> DOUBLE_ARRAY = JoclArgumentFactory.fromClass(double[].class);
-
     @Override
-    public void bindParameter(KernelArgument kernelArgument, double[] array) {
-        DOUBLE_ARRAY.bind(array, this, kernelArgument);
-    }
-
-    @Override
-    public void bindParameter(KernelArgument kernelArgument, int[] array) {
-        INT_ARRAY.bind(array, this, kernelArgument);
+    public <T> void bindParameter(KernelArgument globalArgument, T o) {
+        JoclArgumentType<?> joclArgumentType = JoclArgumentFactory.fromClass(o.getClass());
+        if (!globalArgument.getType().equals(joclArgumentType)) {
+            throw new RuntimeException("Invalid type " + o.getClass().getName() + " bind for " + globalArgument.getType());
+        }
+        ((JoclArgumentType<T>) joclArgumentType).bind(o, this, globalArgument);
     }
 
     private int bindParameter(int arg_index, int typeSize, Pointer to) {

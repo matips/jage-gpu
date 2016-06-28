@@ -1,6 +1,7 @@
 package org.jage.gpu.executors;
 
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,6 +25,12 @@ class GpuExecution {
     private volatile boolean isFinished = false;
     private double[][] doublesResults;
     private int[][] intResults;
+    private KernelArgument[] globalArguments;
+    private LinkedList<Object> bindedGlobalArguments = new LinkedList<>();
+
+    public void bindGlobalArgument(Object argument) {
+        bindedGlobalArguments.add(argument);
+    }
 
     private class RowBuilder implements ExternalStepBuilder {
         int doubleIndex = 0;
@@ -91,6 +98,10 @@ class GpuExecution {
     public GpuExecution(List<KernelArgument> kernelArguments) {
         this.doubleArguments = new DoubleArguments(filterArguments(kernelArguments, double[].class));
         this.intArguments = new IntArguments(filterArguments(kernelArguments, int[].class));
+        this.globalArguments = kernelArguments.stream()
+                .filter(kernelArgument -> !kernelArgument.getType().is(int[].class) && !kernelArgument.getType().is(double[].class))
+                .skip(1) //skip first argument - by convection it is number of agents and it filled by KernelExecution
+                .toArray(KernelArgument[]::new);
     }
 
     private List<KernelArgument> filterArguments(List<KernelArgument> kernelArguments, Class argumentType) {
@@ -119,6 +130,9 @@ class GpuExecution {
 
             doubleArrays.forEach(kernelExecution::bindParameter);
             intArrays.forEach(kernelExecution::bindParameter);
+            for (int i = 0; i < globalArguments.length; i++) {
+                kernelExecution.bindParameter(globalArguments[i], bindedGlobalArguments.get(i));
+            }
 
             kernelExecution.execute();
             isFinished = true;

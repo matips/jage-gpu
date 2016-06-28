@@ -1,7 +1,6 @@
 package org.jage.gpu.executors;
 
 import org.jage.gpu.ExternalStepBuilder;
-import org.jage.gpu.binding.ArgumentType;
 
 /**
  * Represents exteral executors like GPU. It allow to create new steps and flush all created and not flushed steps.
@@ -14,5 +13,5 @@ public interface ExternalExecutor {
 
     ExternalStepBuilder createStep();
 
-    void bindGlobalArgument(ArgumentType type, Object argument);
+    void bindGlobalArgument(Object argument);
 }
