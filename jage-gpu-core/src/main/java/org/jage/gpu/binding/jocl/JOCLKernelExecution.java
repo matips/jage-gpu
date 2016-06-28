@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.KernelExecution;
+import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_command_queue;
@@ -66,7 +68,7 @@ public class JOCLKernelExecution implements KernelExecution {
     public void execute() {
         long globalWorkSize = elementsSize + localWorkSize - (elementsSize % (localWorkSize == 0 ? 1 : localWorkSize));
 
-        clSetKernelArg(kernel, 0, Sizeof.cl_int, Pointer.to(new long[] { globalWorkSize }));
+        bindParameter(0, Sizeof.cl_int, Pointer.to(new long[] { globalWorkSize }));
         clEnqueueNDRangeKernel(commandQueue, kernel, 1, null,
                 new long[] { globalWorkSize }, localWorkSize != 0 ? new long[] { localWorkSize } : null,
                 0, null, null);
@@ -74,19 +76,28 @@ public class JOCLKernelExecution implements KernelExecution {
 
     }
 
+    JoclArgumentType<int[]> INT_ARRAY = JoclArgumentFactory.fromClass(int[].class);
+    JoclArgumentType<double[]> DOUBLE_ARRAY = JoclArgumentFactory.fromClass(double[].class);
+
     @Override
     public void bindParameter(KernelArgument kernelArgument, double[] array) {
-        assert array.length == elementsSize;
-        bindParameter(kernelArgument, Pointer.to(array), Sizeof.cl_double);
+        DOUBLE_ARRAY.bind(array, this, kernelArgument);
     }
 
     @Override
     public void bindParameter(KernelArgument kernelArgument, int[] array) {
-        assert array.length == elementsSize;
-        bindParameter(kernelArgument, Pointer.to(array), Sizeof.cl_int);
+        INT_ARRAY.bind(array, this, kernelArgument);
     }
 
-    private void bindParameter(KernelArgument kernelArgument, Pointer pointerToArray, int subtypeSize) {
+    private int bindParameter(int arg_index, int typeSize, Pointer to) {
+        return clSetKernelArg(kernel, arg_index, typeSize, to);
+    }
+
+    public int bindParameter(KernelArgument kernelArgument, Pointer to, int typeSize) {
+        return clSetKernelArg(kernel, kernelArgument.getArgumentIndex(), typeSize, to);
+    }
+
+    public void bindArrayParameter(KernelArgument kernelArgument, Pointer pointerToArray, int subtypeSize) {
         if (kernelArgument.isIn() && kernelArgument.isOut()) {
             bindInOutParameter(kernelArgument, pointerToArray, subtypeSize);
         } else if (kernelArgument.isIn()) {
@@ -100,7 +111,7 @@ public class JOCLKernelExecution implements KernelExecution {
         cl_mem mem = clCreateBuffer(context,
                 CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
                 subtypeSize * elementsSize, pointerToArray, null);
-        clSetKernelArg(kernel, kernelArgument.getArgumentIndex(), Sizeof.cl_mem, Pointer.to(mem));
+        bindParameter(kernelArgument.getArgumentIndex(), Sizeof.cl_mem, Pointer.to(mem));
         binded.put(kernelArgument, new MemoryAndPointer(mem, pointerToArray, subtypeSize));
     }
 
@@ -109,7 +120,7 @@ public class JOCLKernelExecution implements KernelExecution {
         cl_mem mem = clCreateBuffer(context,
                 CL_MEM_READ_WRITE,
                 subtypeSize * elementsSize, null, null);
-        clSetKernelArg(kernel, kernelArgument.getArgumentIndex(), Sizeof.cl_mem, Pointer.to(mem));
+        bindParameter(kernelArgument.getArgumentIndex(), Sizeof.cl_mem, Pointer.to(mem));
         binded.put(kernelArgument, new MemoryAndPointer(mem, pointerToArray, subtypeSize));
     }
 
@@ -118,7 +129,7 @@ public class JOCLKernelExecution implements KernelExecution {
         cl_mem mem = clCreateBuffer(context,
                 CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
                 subtypeSize * elementsSize, kernelArgument.isIn() ? pointerToArray : null, null);
-        clSetKernelArg(kernel, kernelArgument.getArgumentIndex(), Sizeof.cl_mem, Pointer.to(mem));
+        bindParameter(kernelArgument.getArgumentIndex(), Sizeof.cl_mem, Pointer.to(mem));
         binded.put(kernelArgument, new MemoryAndPointer(mem, pointerToArray, subtypeSize));
     }
 }

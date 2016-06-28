@@ -2,7 +2,9 @@ package org.jage.gpu.executors;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.jage.gpu.ExternalStepBuilder;
+import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.Kernel;
 
 public class GpuExecutor implements ExternalExecutor {
@@ -24,6 +26,11 @@ public class GpuExecutor implements ExternalExecutor {
     @Override
     public ExternalStepBuilder createStep() {
         return executionToFlush.get().getStepBuilder();
+    }
+
+    @Override
+    public void bindGlobalArgument(ArgumentType type, Object argument) {
+        throw new NotImplementedException();
     }
 
 }

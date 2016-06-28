@@ -14,7 +14,7 @@ import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.KernelExecution;
 import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
-import org.jage.gpu.binding.jocl.arguments.JoclPrimitiveArgumentTypes;
+import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_kernel;
@@ -47,7 +47,7 @@ public class JOCLKernel implements Kernel {
         for (int paramNumber = 0; paramNumber < numArgs; paramNumber++) {
             String argumentName = getArgumentName(paramNumber);
             ArgumentAccessQualifier accessQualifier = getArgumentAccessQualifierCode(paramNumber);
-            JoclPrimitiveArgumentTypes typeName = getArgumentType(paramNumber);
+            JoclArgumentType typeName = getArgumentType(paramNumber);
             boolean isIn = inArguments.contains(argumentName);
             boolean isOut = outArguments.contains(argumentName);
             LOGGER.info("Argument " + argumentName + " isIn = " + isIn);
@@ -72,7 +72,7 @@ public class JOCLKernel implements Kernel {
         return ArgumentAccessQualifier.fromCode(accessQualifierCode);
     }
 
-    private JoclPrimitiveArgumentTypes getArgumentType(int argumentNumber) {
+    private JoclArgumentType getArgumentType(int argumentNumber) {
         long sizeArray[] = { 0 };
         byte paramValueCharArray[] = new byte[1024];
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_NAME, 0, null, sizeArray);
