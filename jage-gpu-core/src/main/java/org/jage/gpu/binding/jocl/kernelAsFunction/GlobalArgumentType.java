@@ -1,17 +1,22 @@
 package org.jage.gpu.binding.jocl.kernelAsFunction;
 
 import org.jage.gpu.binding.ArgumentType;
-import org.jage.gpu.binding.jocl.JOCLKernelExecution;
+import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
 
 /**
  * Define global argument witch can be bound to GPU by workplace
  */
-public interface GlobalArgumentType<T> extends ArgumentType {
+public abstract class GlobalArgumentType<T> extends JoclArgumentType {
+    protected GlobalArgumentType(Class javaClass, String... cNames) {
+        super(javaClass, cNames);
+    }
+
     /**
-     *
      * @return block of openCL code witch will append to begging of kernel
      */
-    String preExecutionBlock(String argumentName);
+    abstract String preExecutionBlock(String argumentName);
 
-    void bind(JOCLKernelExecution joclKernelExecution, T value);
+    public ArgumentType toWrapperType() {
+        return this;
+    }
 }

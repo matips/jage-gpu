@@ -46,7 +46,6 @@ public class GpuSubStepTestWithGlobalArgument {
                         assertEquals("Different on " + callackCalls.get() + " comparation", a1 * a2, gpuReader.readDouble(), 1e-20);
                         callackCalls.incrementAndGet();
                     }));
-
         }
 
         subSteps.stream().map(SubStep::canExecute).forEach(org.junit.Assert::assertFalse);

@@ -18,4 +18,5 @@ public abstract class JoclArrayType<T> extends JoclArgumentType<T> {
         throw new RuntimeException("OpenCL does not supports pointers of pointers.");
     }
 
+
 }

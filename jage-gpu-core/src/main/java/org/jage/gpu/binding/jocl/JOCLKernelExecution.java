@@ -28,6 +28,7 @@ public class JOCLKernelExecution implements KernelExecution {
      * Bind out paramters (we will need to read it from GPU memory)
      */
     private final Map<KernelArgument, MemoryAndPointer> binded = new HashMap<>();
+    private final JoclArgumentFactory argumentFactory;
 
     @Override
     public void close() {
@@ -57,11 +58,13 @@ public class JOCLKernelExecution implements KernelExecution {
 
     }
 
-    public JOCLKernelExecution(cl_kernel kernel, cl_context context, cl_command_queue commandQueue, int elementsSize) {
+    public JOCLKernelExecution(cl_kernel kernel, cl_context context, cl_command_queue commandQueue, int elementsSize, JoclArgumentFactory argumentFactory) {
         this.kernel = kernel;
         this.context = context;
         this.commandQueue = commandQueue;
         this.elementsSize = elementsSize;
+        this.argumentFactory = argumentFactory;
+
     }
 
     @Override
@@ -78,7 +81,7 @@ public class JOCLKernelExecution implements KernelExecution {
 
     @Override
     public <T> void bindParameter(KernelArgument globalArgument, T o) {
-        JoclArgumentType<?> joclArgumentType = JoclArgumentFactory.fromClass(o.getClass());
+        JoclArgumentType<?> joclArgumentType = argumentFactory.fromClass(o.getClass());
         if (!globalArgument.getType().equals(joclArgumentType)) {
             throw new RuntimeException("Invalid type " + o.getClass().getName() + " bind for " + globalArgument.getType());
         }

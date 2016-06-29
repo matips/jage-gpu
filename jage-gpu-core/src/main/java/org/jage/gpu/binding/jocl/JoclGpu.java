@@ -17,6 +17,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jage.gpu.binding.GPU;
 import org.jage.gpu.binding.Kernel;
+import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
 import org.jocl.CL;
 import org.jocl.Pointer;
 import org.jocl.cl_command_queue;
@@ -45,6 +47,7 @@ public class JoclGpu implements GPU {
     private cl_device_id device;
     private List<cl_kernel> createdKernels = new ArrayList<>();
     private List<cl_program> createdPrograms = new ArrayList<>();
+    JoclArgumentFactory argumentFactory = DefaultJoclArgumentFactory.INSTANCE;
 
     /**
      *
@@ -57,6 +60,10 @@ public class JoclGpu implements GPU {
     }
 
     public JoclGpu() {
+    }
+
+    public void setArgumentFactory(JoclArgumentFactory argumentFactory) {
+        this.argumentFactory = argumentFactory;
     }
 
     /**
@@ -155,7 +162,7 @@ public class JoclGpu implements GPU {
             cl_kernel kernel = clCreateKernel(program, kernelName, null);
             this.createdKernels.add(kernel);
 
-            return new JOCLKernel(this, kernel, kernelName, inArguments, outArguments);
+            return new JOCLKernel(this, kernel, kernelName, inArguments, outArguments, argumentFactory);
         } finally {
             readLock.unlock();
         }

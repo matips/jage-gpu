@@ -34,4 +34,26 @@ public abstract class JoclArgumentType<T> implements ArgumentType {
     }
 
     public abstract void bind(T var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument);
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        JoclArgumentType<?> that = (JoclArgumentType<?>) o;
+
+        if (!names.equals(that.names) || isArray() ^ that.isArray() || isPointer() ^ that.isPointer())
+            return false;
+        return javaClass.equals(that.javaClass);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = names.hashCode();
+        result = 31 * result + javaClass.hashCode();
+        return result;
+    }
 }

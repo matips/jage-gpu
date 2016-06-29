@@ -27,12 +27,14 @@ public class JOCLKernel implements Kernel {
     private final cl_kernel kernel;
     private final JoclGpu gpu;
     private final String kernelName;
+    private final JoclArgumentFactory argumentFactory;
     private List<KernelArgument> arguments;
 
-    public JOCLKernel(JoclGpu gpu, cl_kernel kernel, String kernelName, Set<String> inArguments, Set<String> outArguments) throws IOException {
+    public JOCLKernel(JoclGpu gpu, cl_kernel kernel, String kernelName, Set<String> inArguments, Set<String> outArguments, JoclArgumentFactory argumentFactory) throws IOException {
         this.kernel = kernel;
         this.kernelName = kernelName;
         this.gpu = gpu;
+        this.argumentFactory = argumentFactory;
 
         loadKernelInfo(inArguments, outArguments);
     }
@@ -79,7 +81,7 @@ public class JOCLKernel implements Kernel {
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_NAME, sizeArray[0], Pointer.to(paramValueCharArray), null);
         String typeName = new String(paramValueCharArray, 0, (int) sizeArray[0] - 1);
         LOGGER.info(String.format("%d kernel %s argument has type: %s", argumentNumber, kernelName, typeName));
-        return JoclArgumentFactory.fromName(typeName);
+        return argumentFactory.fromName(typeName);
     }
 
     private String getArgumentName(int argumentNumber) {
@@ -102,7 +104,8 @@ public class JOCLKernel implements Kernel {
 
     @Override
     public KernelExecution newExecution(int elementsSize) {
-        return new JOCLKernelExecution(kernel, gpu.getContext(), gpu.getCommandQueue(), elementsSize);
+        return new JOCLKernelExecution(kernel, gpu.getContext(), gpu.getCommandQueue(), elementsSize, argumentFactory);
     }
+
 }
 

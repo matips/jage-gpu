@@ -9,7 +9,7 @@ import org.apache.bcel.util.ClassLoader;
 import org.jage.gpu.binding.ArgumentAccessQualifier;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
-import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,9 +35,9 @@ public class KernelAsFunctionGPUTest {
         for (int i = 0; i < 4; i++) {
             Assert.assertEquals(ArgumentAccessQualifier.NONE, arguments.get(i).getAccessQualifier());
         }
-        Assert.assertEquals(JoclArgumentFactory.fromClass(Integer.class), arguments.get(0).getType());
+        Assert.assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(Integer.class), arguments.get(0).getType());
         for (int i = 1; i < 4; i++) {
-            assertEquals(JoclArgumentFactory.fromClass(double[].class), arguments.get(i).getType());
+            assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(double[].class), arguments.get(i).getType());
         }
 
         assertFalse(arguments.get(0).isIn());
