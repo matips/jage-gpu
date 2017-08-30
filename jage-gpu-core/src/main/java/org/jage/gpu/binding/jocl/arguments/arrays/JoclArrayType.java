@@ -1,9 +1,9 @@
 package org.jage.gpu.binding.jocl.arguments.arrays;
 
 import org.jage.gpu.binding.ArgumentType;
-import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
+import org.jage.gpu.binding.jocl.arguments.AbstractJoclArgumentType;
 
-public abstract class JoclArrayType<T> extends JoclArgumentType<T> {
+public abstract class JoclArrayType<T> extends AbstractJoclArgumentType<T> {
     protected JoclArrayType(Class<T> javaClass, String... cNames) {
         super(javaClass, cNames);
     }

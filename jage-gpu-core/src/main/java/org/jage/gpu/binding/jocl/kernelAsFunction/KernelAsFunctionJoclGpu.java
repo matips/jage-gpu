@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.GPU;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JoclGpu;
+import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.FunctionArgumentFactory;
+import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.FunctionArgumentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,19 +24,22 @@ import org.slf4j.LoggerFactory;
  */
 public class KernelAsFunctionJoclGpu implements GPU {
     private static final Logger LOGGER = LoggerFactory.getLogger(KernelAsFunctionJoclGpu.class);
-    protected final JoclGpu joclGpu = new JoclGpu(true);
+    protected final JoclGpu joclGpu;
     private static final String KERNEL_TEMPLATE = "__kernel void %s(\n"
             + "%s\n"
             + "    )\n"
             + "{\n"
             + "\n"
             + "    int globalIndex = get_global_id(0);\n"
+            + "    %s"
             + "    if (globalIndex < height){\n"
             + "        %s(%s);\n"
             + "    }\n"
             + "}";
 
     public KernelAsFunctionJoclGpu() throws IOException {
+        joclGpu = new JoclGpu(true);
+        joclGpu.setArgumentFactory(new FunctionArgumentFactory());
     }
 
     @Override
@@ -70,8 +76,12 @@ public class KernelAsFunctionJoclGpu implements GPU {
 
         for (KernelArgument functionArgument : baseFunction.getArguments()) {
             kernelArgumentsText += ",\n";
-            kernelArgumentsText += "__global ";
-            kernelArgumentsText += (functionArgument.getType().isPointer()) ? functionArgument.getType() : functionArgument.getType().toArray();
+            ArgumentType argumentType = toWrapperType(functionArgument.getType());
+            if (argumentType.isPointer()) {
+                kernelArgumentsText += "__global ";
+            }
+            kernelArgumentsText += argumentType;
+            kernelArgumentsText += " ";
             kernelArgumentsText += functionArgument.getArgumentName();
 
             if (functionCallArguments.length() > 0) {
@@ -81,9 +91,33 @@ public class KernelAsFunctionJoclGpu implements GPU {
                 functionCallArguments += "&";
             }
             functionCallArguments += functionArgument.getArgumentName();
-            functionCallArguments += "[globalIndex]";
+            if (argumentType.isArray()) {
+                functionCallArguments += "[globalIndex]";
+            }
         }
-        return String.format(KERNEL_TEMPLATE, generatedKernelName(functionName), kernelArgumentsText, functionName, functionCallArguments);
+        return String.format(KERNEL_TEMPLATE, generatedKernelName(functionName), kernelArgumentsText, generatePreExecutionBlock(baseFunction), functionName,
+                functionCallArguments);
+    }
+
+    private ArgumentType toWrapperType(ArgumentType type) {
+        if (type instanceof FunctionArgumentType<?>) {
+            return ((FunctionArgumentType) type).toWrapperType();
+        } else {
+            return (type.isPointer()) ? type : type.toArray();
+        }
+    }
+
+    private String generatePreExecutionBlock(Kernel baseFunction) {
+        String preExecutionBlock = "";
+        for (KernelArgument functionArgument : baseFunction.getArguments()) {
+            ArgumentType type = functionArgument.getType();
+            if (type instanceof FunctionArgumentType<?>) {
+                FunctionArgumentType globalArgument = (FunctionArgumentType) type;
+                preExecutionBlock += globalArgument.preExecutionBlock(functionArgument).replace("\n", "\n\t\t");
+            }
+        }
+        return preExecutionBlock;
+
     }
 
 }

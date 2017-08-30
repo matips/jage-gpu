@@ -3,13 +3,18 @@ package org.jage.gpu;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.List;
 import java.util.Random;
 
 import org.apache.bcel.util.ClassLoader;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelExecution;
 import org.jage.gpu.binding.jocl.JoclGpu;
+import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
 import org.jage.gpu.binding.jocl.kernelAsFunction.KernelAsFunctionJoclGpu;
+import org.jage.gpu.binding.jocl.kernelAsFunction.SimpleGPU;
+import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.GlobalArgument;
+import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.PrimitiveWrapper;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
@@ -17,6 +22,7 @@ import com.google.common.collect.Sets;
 public class GpuExecutorTest {
 
     private File kernelSource = new File(ClassLoader.getSystemResource("simpleAddingTest.cl").getFile());
+    private File kernelAsFunctionWithGlobal = new File(ClassLoader.getSystemResource("kernelAsFunctionWithGlobal.cl").getFile());
     private File argumentsTestKernelAsFunction = new File(ClassLoader.getSystemResource("argumentsTestKernelAsFunction.cl").getFile());
     private File simpleAddingInPlaceTestSource = new File(ClassLoader.getSystemResource("simpleAddingInPlaceTest.cl").getFile());
 
@@ -67,6 +73,29 @@ public class GpuExecutorTest {
     }
 
     @Test
+    public void kernelAsFunctionWithGlobal() throws Exception {
+        SimpleGPU joclGpu = new SimpleGPU();
+        Kernel kernel = joclGpu.buildKernel(kernelAsFunctionWithGlobal, "adding");
+        KernelExecution kernelExecution = kernel.newExecution(20);
+        Random random = new Random();
+        double[][] arrays = new double[3][];
+        for (int i = 0; i < 3; i++) {
+            arrays[i] = new double[20];
+        }
+        for (int i = 0; i < 20; i++) {
+            arrays[0][i] = random.nextDouble();
+            arrays[1][i] = random.nextDouble();
+        }
+        for (int i = 0; i < 3; i++) {
+            kernelExecution.bindParameter(kernel.getArguments().get(i + 1), arrays[i]);
+        }
+        kernelExecution.execute();
+        for (int i = 0; i < 20; i++) {
+            assertEquals(arrays[0][i] + arrays[1][i], arrays[2][i], 0.00001);
+        }
+    }
+
+    @Test
     public void testExecuteWithInOut() throws Exception {
         JoclGpu joclGpu = new JoclGpu();
         joclGpu.initialize();
@@ -92,4 +121,15 @@ public class GpuExecutorTest {
         }
     }
 
+}
+@GlobalArgument
+class GlobalInt extends PrimitiveWrapper<Integer> {
+    public GlobalInt() {
+        super(DefaultJoclArgumentFactory.INSTANCE.fromClass(Integer.class));
+    }
+
+    @Override
+    public List<String> getNames() {
+        return super.getNames();
+    }
 }

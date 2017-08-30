@@ -1,8 +1,8 @@
 package org.jage.gpu.binding.jocl.arguments.primitives;
 
-import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
+import org.jage.gpu.binding.jocl.arguments.AbstractJoclArgumentType;
 
-public abstract class JoclPrimitiveType<T> extends JoclArgumentType<T> {    //
+public abstract class JoclPrimitiveType<T> extends AbstractJoclArgumentType<T> {    //
     //    DOUBLE(double.class, "double"),
     //    FLOAT(float.class, "float"),
     //    CHAR(char.class, "char"),

@@ -2,11 +2,11 @@ package org.jage.gpu.binding.jocl.arguments.arrays;
 
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
-import org.jage.gpu.binding.jocl.arguments.GlobalArgument;
+import org.jage.gpu.binding.jocl.arguments.PrimitiveArgument;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 
-@GlobalArgument
+@PrimitiveArgument
 public class FloatArray extends JoclArrayType<float[]> {
     public FloatArray() {
         super(float[].class, "float*");

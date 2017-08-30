@@ -3,12 +3,12 @@ package org.jage.gpu.binding.jocl.arguments.primitives;
 import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
-import org.jage.gpu.binding.jocl.arguments.GlobalArgument;
+import org.jage.gpu.binding.jocl.arguments.PrimitiveArgument;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 
-@GlobalArgument
+@PrimitiveArgument
 public class Double extends JoclPrimitiveType<java.lang.Double> {
     Double() {
         super(java.lang.Double.class, "double");

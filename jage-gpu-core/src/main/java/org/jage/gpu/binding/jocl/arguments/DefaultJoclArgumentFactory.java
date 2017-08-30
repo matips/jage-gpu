@@ -16,11 +16,11 @@ public class DefaultJoclArgumentFactory implements JoclArgumentFactory {
 
     public void initJoclArguments() {
         Reflections reflections = new Reflections("");
-        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(GlobalArgument.class);
+        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(PrimitiveArgument.class);
         arguments = annotated.stream()
                 .map(aClass -> {
-                    if (!JoclArgumentType.class.isAssignableFrom(aClass))
-                        throw new RuntimeException(aClass.getName() + " is annotated with " + GlobalArgument.class.getName());
+                    if (!AbstractJoclArgumentType.class.isAssignableFrom(aClass))
+                        throw new RuntimeException(aClass.getName() + " is annotated with " + PrimitiveArgument.class.getName());
                     return (Class<? extends JoclArgumentType>) aClass;
                 })
                 .map((ThrowingFunction<Class<? extends JoclArgumentType>, Constructor<? extends JoclArgumentType>>) aClass -> aClass.getDeclaredConstructor())
@@ -35,7 +35,7 @@ public class DefaultJoclArgumentFactory implements JoclArgumentFactory {
             initJoclArguments();
 
         return arguments.stream()
-                .filter(type -> type.names.contains(cTypeName.trim()))
+                .filter(type -> type.getNames().contains(cTypeName.trim()))
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("Cannot parse type " + cTypeName));
     }

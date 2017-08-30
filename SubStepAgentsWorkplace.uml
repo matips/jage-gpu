@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>org.jage.gpu.workplace.SubStepAgentsWorkplace</OriginalElement>
+  <nodes>
+    <node x="20.5" y="316.0">org.jage.agent.IAggregate</node>
+    <node x="426.0432692307693" y="0.0">org.jage.monitor.IChangesNotifier</node>
+    <node x="71.25" y="395.0">org.jage.workplace.Workplace</node>
+    <node x="333.25" y="395.0">org.jage.agent.ISimpleAggregate</node>
+    <node x="0.0" y="237.0">java.util.Collection</node>
+    <node x="420.5432692307693" y="79.0">org.jage.property.IPropertyContainer</node>
+    <node x="483.8125" y="237.0">org.jage.platform.component.provider.IComponentInstanceProviderAware</node>
+    <node x="402.0" y="316.0">org.jage.agent.ISimpleAgent</node>
+    <node x="508.7139423076924" y="474.0">org.jage.agent.SimpleAggregate</node>
+    <node x="690.8100961538462" y="316.0">org.jage.agent.IAgentEnvironment</node>
+    <node x="243.2684294871795" y="158.0">org.jage.platform.component.IStatefulComponent</node>
+    <node x="205.25" y="474.0">java.lang.Runnable</node>
+    <node x="163.65144230769238" y="632.0">org.jage.gpu.workplace.SubStepAgentsWorkplace</node>
+    <node x="7.5" y="158.0">java.lang.Iterable</node>
+    <node x="402.2684294871795" y="158.0">java.io.Serializable</node>
+    <node x="179.25" y="395.0">java.lang.FunctionalInterface</node>
+    <node x="541.8100961538462" y="395.0">org.jage.agent.SimpleAgent</node>
+    <node x="562.8100961538462" y="316.0">org.jage.agent.AbstractAgent</node>
+    <node x="185.65144230769238" y="553.0">org.jage.gpu.workplace.SimpleWorkplace</node>
+    <node x="723.8125" y="237.0">org.jage.property.ClassPropertyContainer</node>
+    <node x="279.8613782051283" y="237.0">org.jage.agent.IAgent</node>
+    <node x="715.3125" y="158.0">org.jage.property.AbstractPropertyContainer</node>
+    <node x="672.8100961538462" y="395.0">org.jage.agent.ISimpleAgentEnvironment</node>
+    <node x="130.5" y="316.0">org.jage.agent.ThreadedAgent</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="org.jage.agent.SimpleAggregate" target="org.jage.agent.ISimpleAggregate">
+      <point x="-41.0" y="-14.5" />
+      <point x="529.2139423076924" y="449.0" />
+      <point x="396.25" y="449.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.ISimpleAgent" target="org.jage.agent.IAgent">
+      <point x="0.0" y="-14.5" />
+      <point x="453.5" y="296.0" />
+      <point x="321.7363782051283" y="296.0" />
+      <point x="8.375" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.AbstractAgent" target="org.jage.property.ClassPropertyContainer">
+      <point x="36.0" y="-14.5" />
+      <point x="652.8100961538462" y="296.0" />
+      <point x="801.8125" y="296.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.gpu.workplace.SimpleWorkplace" target="java.lang.Runnable">
+      <point x="-2.8421709430404007E-14" y="-14.5" />
+      <point x="247.65144230769235" y="528.0" />
+      <point x="246.25" y="528.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.property.ClassPropertyContainer" target="org.jage.property.AbstractPropertyContainer">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.IAgent" target="java.io.Serializable">
+      <point x="22.333333333333314" y="-14.5" />
+      <point x="335.69471153846155" y="212.0" />
+      <point x="447.2684294871795" y="212.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.SimpleAgent" target="org.jage.agent.AbstractAgent">
+      <point x="25.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="java.lang.Runnable" target="java.lang.FunctionalInterface">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.workplace.Workplace" target="org.jage.agent.ThreadedAgent">
+      <point x="22.0" y="-14.5" />
+      <point x="137.25" y="375.0" />
+      <point x="187.5" y="375.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="java.util.Collection" target="java.lang.Iterable">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.AbstractAgent" target="org.jage.platform.component.provider.IComponentInstanceProviderAware">
+      <point x="0.0" y="-14.5" />
+      <point x="616.8100961538462" y="296.0" />
+      <point x="593.8125" y="296.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.IAgent" target="org.jage.platform.component.IStatefulComponent">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.IAggregate" target="org.jage.agent.IAgent">
+      <point x="22.5" y="-14.5" />
+      <point x="88.0" y="286.0" />
+      <point x="288.2363782051283" y="286.0" />
+      <point x="-25.125" y="14.5" />
+    </edge>
+    <edge source="org.jage.gpu.workplace.SimpleWorkplace" target="org.jage.workplace.Workplace">
+      <point x="-41.33333333333337" y="-14.5" />
+      <point x="206.318108974359" y="528.0" />
+      <point x="115.25" y="528.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.SimpleAgent" target="org.jage.agent.ISimpleAgent">
+      <point x="-25.0" y="-14.5" />
+      <point x="566.8100961538462" y="375.0" />
+      <point x="479.25" y="375.0" />
+      <point x="25.75" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.IAgent" target="org.jage.property.IPropertyContainer">
+      <point x="-22.333333333333314" y="-14.5" />
+      <point x="291.0280448717949" y="212.0" />
+      <point x="219.3309294871795" y="212.0" />
+      <point x="219.3309294871795" y="133.0" />
+      <point x="453.5432692307693" y="133.0" />
+      <point x="-33.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.property.AbstractPropertyContainer" target="org.jage.property.IPropertyContainer">
+      <point x="0.0" y="-14.5" />
+      <point x="801.8125" y="133.0" />
+      <point x="519.5432692307693" y="133.0" />
+      <point x="33.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.ISimpleAggregate" target="org.jage.agent.IAggregate">
+      <point x="-31.5" y="-14.5" />
+      <point x="364.75" y="365.0" />
+      <point x="88.0" y="365.0" />
+      <point x="22.5" y="14.5" />
+    </edge>
+    <edge source="org.jage.gpu.workplace.SimpleWorkplace" target="org.jage.agent.SimpleAggregate">
+      <point x="41.333333333333286" y="-14.5" />
+      <point x="288.98477564102564" y="528.0" />
+      <point x="570.2139423076924" y="528.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.SimpleAggregate" target="org.jage.agent.SimpleAgent">
+      <point x="0.0" y="-14.5" />
+      <point x="570.2139423076924" y="449.0" />
+      <point x="591.8100961538462" y="449.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.ISimpleAggregate" target="org.jage.agent.ISimpleAgent">
+      <point x="31.5" y="-14.5" />
+      <point x="-25.75" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.ThreadedAgent" target="org.jage.agent.IAgent">
+      <point x="0.0" y="-14.5" />
+      <point x="187.5" y="296.0" />
+      <point x="304.9863782051283" y="296.0" />
+      <point x="-8.375" y="14.5" />
+    </edge>
+    <edge source="org.jage.workplace.Workplace" target="org.jage.agent.IAggregate">
+      <point x="-22.0" y="-14.5" />
+      <point x="93.25" y="375.0" />
+      <point x="43.0" y="375.0" />
+      <point x="-22.5" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.SimpleAggregate" target="org.jage.agent.ISimpleAgentEnvironment">
+      <point x="41.0" y="-14.5" />
+      <point x="611.2139423076924" y="449.0" />
+      <point x="758.3100961538462" y="449.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.ISimpleAgentEnvironment" target="org.jage.agent.IAgentEnvironment">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.AbstractAgent" target="org.jage.agent.IAgent">
+      <point x="-36.0" y="-14.5" />
+      <point x="580.8100961538462" y="286.0" />
+      <point x="338.4863782051283" y="286.0" />
+      <point x="25.125" y="14.5" />
+    </edge>
+    <edge source="org.jage.property.IPropertyContainer" target="org.jage.monitor.IChangesNotifier">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.gpu.workplace.SubStepAgentsWorkplace" target="org.jage.gpu.workplace.SimpleWorkplace">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="org.jage.agent.IAggregate" target="java.util.Collection">
+      <point x="-22.5" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="444.5" y="330.5" />
+  <SelectedNodes>
+    <node>org.jage.gpu.workplace.SubStepAgentsWorkplace</node>
+  </SelectedNodes>
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
