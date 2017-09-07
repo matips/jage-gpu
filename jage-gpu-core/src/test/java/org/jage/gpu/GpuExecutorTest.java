@@ -3,6 +3,7 @@ package org.jage.gpu;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -86,12 +87,14 @@ public class GpuExecutorTest {
             arrays[0][i] = random.nextDouble();
             arrays[1][i] = random.nextDouble();
         }
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             kernelExecution.bindParameter(kernel.getArguments().get(i + 1), arrays[i]);
         }
+        kernelExecution.bindParameter(kernel.getArguments().get(3), 10);
+        kernelExecution.bindParameter(kernel.getArguments().get(4), arrays[2]);
         kernelExecution.execute();
         for (int i = 0; i < 20; i++) {
-            assertEquals(arrays[0][i] + arrays[1][i], arrays[2][i], 0.00001);
+            assertEquals((arrays[0][i] + arrays[1][i])*10, arrays[2][i], 0.00001);
         }
     }
 
@@ -130,6 +133,6 @@ class GlobalInt extends PrimitiveWrapper<Integer> {
 
     @Override
     public List<String> getNames() {
-        return super.getNames();
+        return Arrays.asList("global_int");
     }
 }

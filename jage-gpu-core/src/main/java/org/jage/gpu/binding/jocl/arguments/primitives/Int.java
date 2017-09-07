@@ -16,7 +16,7 @@ public class Int extends JoclPrimitiveType<Integer> {
 
     @Override
     public void bind(Integer var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
-        kernelExecution.bindParameter(kernelArgument, Pointer.to(new long[] { var }), Sizeof.cl_long);
+        kernelExecution.bindParameter(kernelArgument, Pointer.to(new int[] { var }), Sizeof.cl_uint);
     }
 
     @Override

@@ -8,7 +8,11 @@ public interface ThrowingFunction<T, R> extends Function<T, R> {
         try {
             return throwingApply(t);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else {
+                throw new RuntimeException(e);
+            }
         }
     }
 

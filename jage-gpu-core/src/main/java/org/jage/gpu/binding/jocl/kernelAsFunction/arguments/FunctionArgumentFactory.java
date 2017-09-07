@@ -2,6 +2,7 @@ package org.jage.gpu.binding.jocl.kernelAsFunction.arguments;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,7 @@ public class FunctionArgumentFactory implements JoclArgumentFactory {
     private List<FunctionArgumentType> arguments;
 
     public void init() {
-        Reflections reflections = new Reflections("");
+        Reflections reflections = new Reflections("org");
         Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(GlobalArgument.class);
         arguments = annotated.stream()
                 .map(aClass -> {
@@ -32,21 +33,19 @@ public class FunctionArgumentFactory implements JoclArgumentFactory {
     }
 
     @Override
-    public FunctionArgumentType fromName(String cTypeName) {
+    public JoclArgumentType fromName(String cTypeName) {
         if (arguments == null)
             init();
 
         return arguments.stream()
                 .filter(type -> type.getNames().contains(cTypeName.trim()))
+                .map(a -> (JoclArgumentType) a)
                 .findAny()
-                .orElseGet(() -> {
-                    JoclArgumentType joclArgumentType = baseFactory.fromName(cTypeName);
-                    return new PrimitiveWrapper(joclArgumentType);
-                });
+                .orElseGet(() -> baseFactory.fromName(cTypeName));
     }
 
     @Override
-    public <T> FunctionArgumentType fromClass(Class<T> aClass) {
+    public <T> JoclArgumentType fromClass(Class<T> aClass) {
         if (arguments == null)
             init();
 
@@ -55,9 +54,7 @@ public class FunctionArgumentFactory implements JoclArgumentFactory {
                 .reduce((joclArgumentType, joclArgumentType2) -> {
                     throw new RuntimeException("There are multiple JoclArgumentTypes matching " + aClass.getName());
                 })
-                .orElseGet(() -> {
-                    JoclArgumentType joclArgumentType = baseFactory.fromClass(aClass);
-                    return new PrimitiveWrapper(joclArgumentType);
-                });
+                .map(a -> (JoclArgumentType) a)
+                .orElseGet(() -> baseFactory.fromClass(aClass));
     }
 }

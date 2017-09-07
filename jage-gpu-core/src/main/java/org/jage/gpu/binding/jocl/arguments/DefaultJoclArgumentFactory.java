@@ -15,7 +15,7 @@ public class DefaultJoclArgumentFactory implements JoclArgumentFactory {
     private List<JoclArgumentType> arguments;
 
     public void initJoclArguments() {
-        Reflections reflections = new Reflections("");
+        Reflections reflections = new Reflections("org");
         Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(PrimitiveArgument.class);
         arguments = annotated.stream()
                 .map(aClass -> {

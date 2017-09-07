@@ -32,7 +32,6 @@ public class GpuSubStepTestWithGlobalArgument {
     }
 
     @Test
-
     public void testFlush() throws Exception {
         Random random = new Random();
         AtomicInteger callackCalls = new AtomicInteger();
