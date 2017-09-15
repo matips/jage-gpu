@@ -80,7 +80,7 @@ public class KernelAsFunctionJoclGpu implements GPU {
             if (argumentType.isPointer()) {
                 kernelArgumentsText += "__global ";
             }
-            kernelArgumentsText += argumentType;
+            kernelArgumentsText += argumentType.getCName();
             kernelArgumentsText += " ";
             kernelArgumentsText += functionArgument.getArgumentName();
 

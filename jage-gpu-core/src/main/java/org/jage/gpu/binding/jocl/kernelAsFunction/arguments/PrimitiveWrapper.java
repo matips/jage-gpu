@@ -1,11 +1,11 @@
 package org.jage.gpu.binding.jocl.kernelAsFunction.arguments;
 
-import java.util.List;
-
 import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
 import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
+
+import java.util.List;
 
 /**
  * Wraps primitive argument like int or int[]
@@ -45,6 +45,11 @@ public class PrimitiveWrapper<T> implements FunctionArgumentType<T> {
     @Override
     public boolean is(Class javaType) {
         return joclArgumentType.is(javaType);
+    }
+
+    @Override
+    public String getCName() {
+        return joclArgumentType.getCName();
     }
 
     @Override

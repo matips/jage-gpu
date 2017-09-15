@@ -32,6 +32,12 @@ public class FunctionArgumentFactory implements JoclArgumentFactory {
                 .collect(Collectors.toList());
     }
 
+    public List<FunctionArgumentType> allTypes() {
+        if (arguments == null)
+            init();
+        return arguments;
+    }
+
     @Override
     public JoclArgumentType fromName(String cTypeName) {
         if (arguments == null)

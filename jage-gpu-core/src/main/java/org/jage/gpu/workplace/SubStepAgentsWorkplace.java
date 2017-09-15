@@ -36,6 +36,7 @@ public class SubStepAgentsWorkplace extends SimpleWorkplace {
                 .collect(Collectors.toList());
 
         while (!remainSubStepAgents.isEmpty()) {
+            preExternalFlush();
             externalExecutorRegistry.flush();
             Iterator<SubStepAgent> iterator = remainSubStepAgents.iterator();
             while (iterator.hasNext()) {
@@ -45,6 +46,10 @@ public class SubStepAgentsWorkplace extends SimpleWorkplace {
                 }
             }
         }
+    }
+
+    protected void preExternalFlush() {
+        //bind some global variables;
     }
 
     @Override

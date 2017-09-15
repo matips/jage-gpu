@@ -16,7 +16,7 @@ public abstract class AbstractJoclArgumentType<T> implements JoclArgumentType<T>
 
     @Override
     public String toString() {
-        return names.get(0);
+        return getCName();
     }
 
     @Override
@@ -54,5 +54,10 @@ public abstract class AbstractJoclArgumentType<T> implements JoclArgumentType<T>
     @Override
     public List<String> getNames() {
         return names;
+    }
+
+    @Override
+    public String getCName() {
+        return names.get(0);
     }
 }

@@ -1,7 +1,14 @@
 
 package org.jage.gpu.binding.jocl;
 
-import static org.jocl.CL.*;
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.jage.gpu.binding.GPU;
+import org.jage.gpu.binding.Kernel;
+import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
+import org.jage.gpu.helpers.Utils;
+import org.jocl.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,22 +19,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-import org.jage.gpu.binding.GPU;
-import org.jage.gpu.binding.Kernel;
-import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
-import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
-import org.jocl.CL;
-import org.jocl.Pointer;
-import org.jocl.cl_command_queue;
-import org.jocl.cl_context;
-import org.jocl.cl_context_properties;
-import org.jocl.cl_device_id;
-import org.jocl.cl_kernel;
-import org.jocl.cl_platform_id;
-import org.jocl.cl_program;
+import static org.jocl.CL.*;
 
 /**
  * A sample showing a simple reduction with JOCL
@@ -50,7 +45,6 @@ public class JoclGpu implements GPU {
     JoclArgumentFactory argumentFactory = DefaultJoclArgumentFactory.INSTANCE;
 
     /**
-     *
      * @param initalize if true GPU is initialized in constructor
      * @throws IOException
      */
@@ -92,7 +86,7 @@ public class JoclGpu implements GPU {
             cl_platform_id platform = platforms[platformIndex];
 
             // Check if the platform supports OpenCL 1.2
-            long sizeArray[] = { 0 };
+            long sizeArray[] = {0};
             clGetPlatformInfo(platform, CL_PLATFORM_VERSION, 0, null, sizeArray);
             byte buffer[] = new byte[(int) sizeArray[0]];
             clGetPlatformInfo(platform, CL_PLATFORM_VERSION,
@@ -131,7 +125,7 @@ public class JoclGpu implements GPU {
 
             // Create a context for the selected device
             context = clCreateContext(
-                    contextProperties, 1, new cl_device_id[] { device },
+                    contextProperties, 1, new cl_device_id[]{device},
                     null, null, null);
 
             commandQueue = clCreateCommandQueue(context, device, 0, null);
@@ -150,13 +144,14 @@ public class JoclGpu implements GPU {
             if (wasShutdowned.get()) {
                 throw new IllegalStateException("GPU was shutdown, cannot execute operations");
             }
+
             int[] errorCode = new int[1];
-            cl_program program = clCreateProgramWithSource(context, 1, new String[] { kernelFileContent }, null, errorCode);
+            cl_program program = clCreateProgramWithSource(context, 1, new String[]{includeHeadres(kernelFileContent)}, null, errorCode);
             checkCreateProgramError(errorCode[0], kernelName);
             this.createdPrograms.add(program);
 
             // Build the program
-            clBuildProgram(program, 0, null, "-cl-kernel-arg-info", null, null);
+            clBuildProgram(program, 0, null, "-cl-kernel-arg-info ", null, null);
 
             // Create the kernel
             cl_kernel kernel = clCreateKernel(program, kernelName, null);
@@ -166,6 +161,30 @@ public class JoclGpu implements GPU {
         } finally {
             readLock.unlock();
         }
+    }
+
+    /**
+     * Try to include files from classpath
+     */
+    private String includeHeadres(String kernelFileContent) {
+        Pattern p = Pattern.compile("^#include\\s*\"(.*)\"$", Pattern.MULTILINE);
+
+        StringBuffer resultString = new StringBuffer();
+        Matcher regexMatcher = p.matcher(kernelFileContent);
+        while (regexMatcher.find()) {
+            String fileName = regexMatcher.group(1);
+
+            String replacement;
+            try {
+                replacement = Utils.getResourceAsString(fileName);
+            } catch (IOException e) {
+                LOGGER.warn("Cannot find file " + fileName);
+                replacement = regexMatcher.group();
+            }
+            regexMatcher.appendReplacement(resultString, replacement);
+        }
+        regexMatcher.appendTail(resultString);
+        return resultString.toString();
     }
 
     @Override
@@ -179,14 +198,14 @@ public class JoclGpu implements GPU {
     //todo: extract to helper class
     private void checkCreateProgramError(int errorCode, String name) {
         switch (errorCode) {
-        case 0:
-            return;
-        case CL_INVALID_CONTEXT:
-            throw new RuntimeException("Error during creating program " + name + " error: CL_INVALID_CONTEXT");
-        case CL_INVALID_VALUE:
-            throw new RuntimeException("Error during creating program " + name + " error: CL_INVALID_VALUE");
-        case CL_OUT_OF_HOST_MEMORY:
-            throw new RuntimeException("Error during creating program " + name + " error: CL_OUT_OF_HOST_MEMORY");
+            case 0:
+                return;
+            case CL_INVALID_CONTEXT:
+                throw new RuntimeException("Error during creating program " + name + " error: CL_INVALID_CONTEXT");
+            case CL_INVALID_VALUE:
+                throw new RuntimeException("Error during creating program " + name + " error: CL_INVALID_VALUE");
+            case CL_OUT_OF_HOST_MEMORY:
+                throw new RuntimeException("Error during creating program " + name + " error: CL_OUT_OF_HOST_MEMORY");
         }
 
     }

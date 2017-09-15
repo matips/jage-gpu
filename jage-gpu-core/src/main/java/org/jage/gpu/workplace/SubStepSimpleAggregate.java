@@ -38,6 +38,7 @@ public class SubStepSimpleAggregate extends SimpleAggregate {
                 .collect(Collectors.toList());
 
         while (!remainSubStepAgents.isEmpty()) {
+            preExternalFlush();
             externalExecutorRegistry.flush();
             Iterator<SubStepAgent> iterator = remainSubStepAgents.iterator();
             while (iterator.hasNext()) {
@@ -47,6 +48,10 @@ public class SubStepSimpleAggregate extends SimpleAggregate {
                 }
             }
         }
+    }
+
+    protected void preExternalFlush() {
+        //bind some global variables;
     }
 
     @Override

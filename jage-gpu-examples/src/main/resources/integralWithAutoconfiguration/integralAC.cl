@@ -11,5 +11,5 @@ __kernel void integral(
     for (double y = left_bound; y < right_bound; y += h ){
         result_tmp += sin(y);
     }
-    *result *= h;
+    *result = result_tmp;
 }

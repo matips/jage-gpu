@@ -1,18 +1,16 @@
 package pl.edu.agh.jage.gpu.examples;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.gpu.executors.ExternalExecutorRegistry;
 import org.jage.gpu.workplace.SubStepAgentsWorkplace;
 import org.jage.platform.component.exception.ComponentException;
-
 import pl.edu.agh.jage.gpu.examples.config.Configuration;
-import pl.edu.agh.jage.gpu.examples.integrals.agents.GPUGridFragment;
+import pl.edu.agh.jage.gpu.examples.random.agents.GPUGridFragment;
+
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
 
 public class GpuGridContainer extends SubStepAgentsWorkplace {
 
@@ -27,6 +25,7 @@ public class GpuGridContainer extends SubStepAgentsWorkplace {
     public GpuGridContainer(AgentAddressSupplier supplier) {
         super(supplier);
     }
+
     public GpuGridContainer(AgentAddressSupplier supplier, ExternalExecutorRegistry externalExecutorRegistry) {
         super(supplier);
         setExternalExecutorRegistry(externalExecutorRegistry);
@@ -60,7 +59,7 @@ public class GpuGridContainer extends SubStepAgentsWorkplace {
                 .map(Object::getClass)
                 .map(Class::getCanonicalName)
                 .get();
-        System.out.println(String.format("%s, %f, %d", agentClassName, (System.currentTimeMillis() - startTime) / 1000.0, configuration.getxSize()*configuration.getySize()));
+        System.out.println(String.format("%s, %f, %d", agentClassName, (System.currentTimeMillis() - startTime) / 1000.0, configuration.getxSize() * configuration.getySize()));
         return super.finish();
     }
 

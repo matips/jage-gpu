@@ -12,4 +12,6 @@ public interface ArgumentType {
      * @return true if represented GPU type match javaType. For example jocl "double" match {@link Double}
      */
     boolean is(Class javaType);
+
+    String getCName();
 }
