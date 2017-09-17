@@ -58,6 +58,11 @@ public class PrimitiveWrapper<T> implements FunctionArgumentType<T> {
     }
 
     @Override
+    public String toSubname(KernelArgument kernelArgument) {
+        return kernelArgument.getArgumentName();
+    }
+
+    @Override
     public ArgumentType toWrapperType() {
         return this;
     }

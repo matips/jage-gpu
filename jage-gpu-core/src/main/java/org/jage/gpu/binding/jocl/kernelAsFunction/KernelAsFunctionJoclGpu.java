@@ -1,9 +1,5 @@
 package org.jage.gpu.binding.jocl.kernelAsFunction;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.GPU;
@@ -14,6 +10,10 @@ import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.FunctionArgumentFact
 import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.FunctionArgumentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * This implementation of GPU accepts functions sources witch operated on one data row.
@@ -90,13 +90,23 @@ public class KernelAsFunctionJoclGpu implements GPU {
             if (functionArgument.isOut()) {
                 functionCallArguments += "&";
             }
-            functionCallArguments += functionArgument.getArgumentName();
+            functionCallArguments += getFunctionParametrName(functionArgument);
             if (argumentType.isArray()) {
                 functionCallArguments += "[globalIndex]";
             }
         }
         return String.format(KERNEL_TEMPLATE, generatedKernelName(functionName), kernelArgumentsText, generatePreExecutionBlock(baseFunction), functionName,
                 functionCallArguments);
+    }
+
+    //todo: refactor to remove instanceof
+    private String getFunctionParametrName(KernelArgument functionArgument) {
+        ArgumentType type = functionArgument.getType();
+        if (type instanceof FunctionArgumentType<?>) {
+            return ((FunctionArgumentType) type).toSubname(functionArgument);
+        } else {
+            return functionArgument.getArgumentName();
+        }
     }
 
     private ArgumentType toWrapperType(ArgumentType type) {
@@ -108,15 +118,15 @@ public class KernelAsFunctionJoclGpu implements GPU {
     }
 
     private String generatePreExecutionBlock(Kernel baseFunction) {
-        String preExecutionBlock = "";
+        String preExecutionBlock = "\n\t//### preExectionBlock\n\t";
         for (KernelArgument functionArgument : baseFunction.getArguments()) {
             ArgumentType type = functionArgument.getType();
             if (type instanceof FunctionArgumentType<?>) {
                 FunctionArgumentType globalArgument = (FunctionArgumentType) type;
-                preExecutionBlock += globalArgument.preExecutionBlock(functionArgument).replace("\n", "\n\t\t");
+                preExecutionBlock += globalArgument.preExecutionBlock(functionArgument).replace("\n", "\n\t");
             }
         }
-        return preExecutionBlock;
+        return preExecutionBlock.trim() + "\n\t//### preExectionBlock end \n\n";
 
     }
 

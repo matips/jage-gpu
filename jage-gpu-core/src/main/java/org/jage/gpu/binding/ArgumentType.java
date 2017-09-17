@@ -1,6 +1,9 @@
 package org.jage.gpu.binding;
 
 public interface ArgumentType {
+    /**
+     * True if it is agent-local variable (array should be distributed across all agents)
+     */
     boolean isArray();
 
     boolean isPointer();

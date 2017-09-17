@@ -8,7 +8,6 @@ import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.GlobalArgument;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -27,7 +26,7 @@ class GpuRandomType implements FunctionArgumentType<Random> {
 
     @Override
     public ArgumentType toArray() {
-        throw new RuntimeException("OpenCL does not supports pointers of pointers.");
+        throw new RuntimeException("Not implemented yet.");
     }
 
     @Override
@@ -52,7 +51,16 @@ class GpuRandomType implements FunctionArgumentType<Random> {
 
     @Override
     public String preExecutionBlock(KernelArgument argumentName) {
-        return "<PRE>";
+        String subname = toSubname(argumentName);
+        return "Random " + subname + ";\n" +
+                "if (globalIndex < height){\n" +
+                "\t" + subname + ".seed =  " + argumentName.getArgumentName() + ".seed * get_global_id(0);\n" +
+                "}\n";
+    }
+
+    @Override
+    public String toSubname(KernelArgument kernelArgument) {
+        return kernelArgument.getArgumentName() + "_local";
     }
 
     @Override

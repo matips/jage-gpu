@@ -8,7 +8,11 @@ import org.jage.gpu.binding.jocl.kernelAsFunction.KernelAsFunctionJoclGpu;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RandomParamterTest {
 
@@ -22,14 +26,27 @@ public class RandomParamterTest {
 
         KernelExecution kernelExecution = kernel.newExecution(20);
         Random random = new Random();
-        double[] array = new double[20];
+        double[] resultArray = new double[20];
 
         kernelExecution.bindParameter(kernel.getArguments().get(1), random);
-        kernelExecution.bindParameter(kernel.getArguments().get(2), array);
+        kernelExecution.bindParameter(kernel.getArguments().get(2), resultArray);
         kernelExecution.execute();
-        for (int i = 0; i < 20; i++) {
-            System.out.println(array[i]);
-        }
+
+        double[] sorted = Arrays.stream(resultArray)
+                .sorted()
+                .toArray();
+        double[] sortedReverse = Arrays.stream(resultArray)
+                .mapToObj(a -> a)
+                .sorted(Comparator.reverseOrder())
+                .mapToDouble(a -> a)
+                .toArray();
+        long distictValues = Arrays.stream(resultArray)
+                .distinct()
+                .count();
+
+        assertThat(sorted).isNotEqualTo(resultArray);
+        assertThat(sortedReverse).isNotEqualTo(resultArray);
+        assertThat(distictValues).isEqualTo(resultArray.length);
     }
 
 }
