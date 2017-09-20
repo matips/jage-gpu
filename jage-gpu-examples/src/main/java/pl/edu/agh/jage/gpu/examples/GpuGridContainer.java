@@ -14,6 +14,7 @@ import java.util.List;
 
 public class GpuGridContainer extends SubStepAgentsWorkplace {
 
+    protected Class<GPUGridFragment> type = GPUGridFragment.class;
     private long startTime;
     @Inject
     Configuration configuration;
@@ -43,7 +44,7 @@ public class GpuGridContainer extends SubStepAgentsWorkplace {
 
         for (int x = 0; x < configuration.getxSize(); x++) {
             for (int y = 0; y < configuration.getySize(); y++) {
-                GPUGridFragment gridFragment = instanceProvider.getInstance(GPUGridFragment.class);
+                pl.edu.agh.jage.gpu.examples.integrals.agents.GPUGridFragment gridFragment = instanceProvider.getInstance(pl.edu.agh.jage.gpu.examples.integrals.agents.GPUGridFragment.class);
                 List<Integer> position = Arrays.asList(x, y);
                 gridFragment.initialize(externalExecutorRegistry);
                 gridFragment.initialize(position);

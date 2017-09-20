@@ -81,11 +81,10 @@ public class JOCLKernelExecution implements KernelExecution {
 
     @Override
     public <T> void bindParameter(KernelArgument globalArgument, T o) {
-        JoclArgumentType<?> joclArgumentType = argumentFactory.fromClass(o.getClass());
         if (!globalArgument.getType().is(o.getClass())) {
             throw new RuntimeException("Invalid type " + o.getClass().getName() + " bind for " + globalArgument.getType());
         }
-        ((JoclArgumentType<T>) joclArgumentType).bind(o, this, globalArgument);
+        ((JoclArgumentType<T>) globalArgument.getType()).bind(o, this, globalArgument);
     }
 
     private int bindParameter(int arg_index, int typeSize, Pointer to) {

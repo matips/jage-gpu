@@ -5,10 +5,15 @@ import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.gpu.executors.ExternalExecutor;
 import org.jage.gpu.executors.ExternalExecutorRegistry;
 import pl.edu.agh.jage.gpu.examples.GpuGridContainer;
+import pl.edu.agh.jage.gpu.examples.random.agents.GPUGridFragment;
 
 import java.util.Random;
 
 public class GpuRandomGridContainer extends GpuGridContainer {
+    {
+        type = GPUGridFragment.class;
+    }
+
     Random random = new Random();
 
     public GpuRandomGridContainer(AgentAddress address) {

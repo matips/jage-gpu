@@ -1,19 +1,21 @@
-package org.jage.gpu.random;
+package org.jage.gpu.local;
 
 import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
 import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.FunctionArgumentType;
 import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.GlobalArgument;
-import org.jocl.Pointer;
 import org.jocl.Sizeof;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
+/**
+ * CRIF IT Solutions Poland
+ */
 @GlobalArgument
-class GpuRandomType implements FunctionArgumentType<Random> {
+class GpuIntLocalMemory implements FunctionArgumentType<Integer> {
+
     @Override
     public boolean isArray() {
         return false;
@@ -26,41 +28,32 @@ class GpuRandomType implements FunctionArgumentType<Random> {
 
     @Override
     public ArgumentType toArray() {
-        throw new RuntimeException("Not implemented yet.");
+        throw new RuntimeException("OpenCL does not supports pointers of pointers.");
     }
 
     @Override
     public boolean is(Class javaType) {
-        return Random.class.equals(javaType);
+        return Integer.class.equals(javaType);
     }
 
     @Override
     public String getCName() {
-        return "Random";
+        return "LocalIntArray";
     }
 
     @Override
-    public void bind(Random var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
-        kernelExecution.bindParameter(kernelArgument, Pointer.to(new long[]{var.nextLong()}), Sizeof.cl_long);
+    public void bind(Integer var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
+        kernelExecution.bindParameter(kernelArgument, null, (Sizeof.cl_int) * var);
     }
 
     @Override
     public List<String> getNames() {
-        return Collections.singletonList("Random");
+        return Collections.singletonList("LocalIntArray");
     }
 
     @Override
     public String preExecutionBlock(KernelArgument argumentName) {
-        String subname = toSubname(argumentName);
-        return "Random " + subname + ";\n" +
-                "if (globalIndex < height){\n" +
-                "\t" + subname + ".seed =  " + argumentName.getArgumentName() + ".seed * get_global_id(0);\n" +
-                "}\n";
-    }
-
-    @Override
-    public String toSubname(KernelArgument kernelArgument) {
-        return kernelArgument.getArgumentName() + "_local";
+        return "";
     }
 
     @Override
