@@ -3,8 +3,8 @@
 #include "localArrays.cl"
 #include "globalPrimitives.cl"
 
-__kernel void sum(
-    LocalIntArray localArray,
+__kernel void globalArray(
+    GlobalDoubleArray localArray,
     __global int* result
     )
 {

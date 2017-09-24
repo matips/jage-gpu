@@ -1,7 +1,11 @@
 package org.jage.gpu.binding.jocl.arguments;
 
+import com.google.common.collect.Sets;
+import org.jage.gpu.binding.ArgumentAddressQualifier;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public abstract class AbstractJoclArgumentType<T> implements JoclArgumentType<T> {
     final List<String> names;
@@ -54,6 +58,11 @@ public abstract class AbstractJoclArgumentType<T> implements JoclArgumentType<T>
     @Override
     public List<String> getNames() {
         return names;
+    }
+
+    @Override
+    public Set<ArgumentAddressQualifier> validAddressSpaces() {
+        return Sets.immutableEnumSet(ArgumentAddressQualifier.GLOBAL, ArgumentAddressQualifier.CONSTANT);
     }
 
     @Override

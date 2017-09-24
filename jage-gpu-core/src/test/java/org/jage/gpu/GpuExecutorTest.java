@@ -1,24 +1,24 @@
 package org.jage.gpu;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
+import com.google.common.collect.Sets;
 import org.apache.bcel.util.ClassLoader;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelExecution;
 import org.jage.gpu.binding.jocl.JoclGpu;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.primitives.Int;
 import org.jage.gpu.binding.jocl.kernelAsFunction.KernelAsFunctionJoclGpu;
 import org.jage.gpu.binding.jocl.kernelAsFunction.SimpleGPU;
 import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.GlobalArgument;
 import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.PrimitiveWrapper;
 import org.junit.Test;
 
-import com.google.common.collect.Sets;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
+import static org.junit.Assert.assertEquals;
 
 public class GpuExecutorTest {
 
@@ -128,7 +128,7 @@ public class GpuExecutorTest {
 @GlobalArgument
 class GlobalInt extends PrimitiveWrapper<Integer> {
     public GlobalInt() {
-        super(DefaultJoclArgumentFactory.INSTANCE.fromClass(Integer.class));
+        super(DefaultJoclArgumentFactory.INSTANCE.fromClass(Int.class));
     }
 
     @Override

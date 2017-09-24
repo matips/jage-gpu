@@ -1,17 +1,19 @@
 package org.jage.gpu.binding.jocl.kernelAsFunction;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.util.List;
-
 import org.apache.bcel.util.ClassLoader;
 import org.jage.gpu.binding.ArgumentAccessQualifier;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.AutoConfigGPU;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.arrays.DoubleArray;
+import org.jage.gpu.binding.jocl.arguments.primitives.Int;
 import org.junit.Test;
+
+import java.io.File;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class SimpleGPUTest {
     private File kernelSource = new File(ClassLoader.getSystemResource("argumentsTestKernelAsFunction.cl").getFile());
@@ -39,9 +41,9 @@ public class SimpleGPUTest {
         for (int i = 0; i < 4; i++) {
             assertEquals(ArgumentAccessQualifier.NONE, arguments.get(i).getAccessQualifier());
         }
-        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(Integer.class), arguments.get(0).getType());
+        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(Int.class), arguments.get(0).getType());
         for (int i = 1; i < 4; i++) {
-            assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(double[].class), arguments.get(i).getType());
+            assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(DoubleArray.class), arguments.get(i).getType());
         }
 
         assertFalse(arguments.get(0).isIn());

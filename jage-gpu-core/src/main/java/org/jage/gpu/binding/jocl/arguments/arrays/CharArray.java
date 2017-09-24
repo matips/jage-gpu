@@ -15,6 +15,6 @@ public class CharArray extends JoclArrayType<char[]> {
     @Override
     public void bind(char[] var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
         kernelExecution.
-                bindArrayParameter(kernelArgument, Pointer.to(var), Sizeof.cl_char);
+                bindArrayParameter(kernelArgument, Pointer.to(var), var.length, Sizeof.cl_char);
     }
 }

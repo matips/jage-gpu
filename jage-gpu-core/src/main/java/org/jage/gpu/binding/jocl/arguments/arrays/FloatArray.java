@@ -15,6 +15,6 @@ public class FloatArray extends JoclArrayType<float[]> {
     @Override
     public void bind(float[] var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
         kernelExecution.
-                bindArrayParameter(kernelArgument, Pointer.to(var), Sizeof.cl_float);
+                bindArrayParameter(kernelArgument, Pointer.to(var), var.length, Sizeof.cl_float);
     }
 }

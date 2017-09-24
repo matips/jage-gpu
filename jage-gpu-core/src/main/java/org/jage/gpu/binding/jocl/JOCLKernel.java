@@ -1,6 +1,12 @@
 package org.jage.gpu.binding.jocl;
 
-import static org.jocl.CL.*;
+import org.apache.log4j.Logger;
+import org.jage.gpu.binding.*;
+import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_kernel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,16 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.jage.gpu.binding.ArgumentAccessQualifier;
-import org.jage.gpu.binding.Kernel;
-import org.jage.gpu.binding.KernelArgument;
-import org.jage.gpu.binding.KernelExecution;
-import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
-import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
-import org.jocl.Pointer;
-import org.jocl.Sizeof;
-import org.jocl.cl_kernel;
+import static org.jocl.CL.*;
 
 /**
  * Basic Kernel implementation. Expect user to configure witch arguments are in and witch are out arguments.
@@ -49,13 +46,14 @@ public class JOCLKernel implements Kernel {
         for (int paramNumber = 0; paramNumber < numArgs; paramNumber++) {
             String argumentName = getArgumentName(paramNumber);
             ArgumentAccessQualifier accessQualifier = getArgumentAccessQualifierCode(paramNumber);
-            JoclArgumentType typeName = getArgumentType(paramNumber);
+            ArgumentAddressQualifier argumentAddressQualifier = getArgumentAddressQualifier(paramNumber);
+            JoclArgumentType typeName = getArgumentType(paramNumber, argumentAddressQualifier);
             boolean isIn = inArguments.contains(argumentName);
             boolean isOut = outArguments.contains(argumentName);
             LOGGER.info("Argument " + argumentName + " isIn = " + isIn);
             LOGGER.info("Argument " + argumentName + " isOut = " + isIn);
 
-            argumentsTemp.add(new KernelArgument(paramNumber, argumentName, accessQualifier, typeName, isIn, isOut));
+            argumentsTemp.add(new KernelArgument(paramNumber, argumentName, accessQualifier, typeName, argumentAddressQualifier, isIn, isOut));
         }
         arguments = Collections.unmodifiableList(argumentsTemp);
     }
@@ -74,14 +72,22 @@ public class JOCLKernel implements Kernel {
         return ArgumentAccessQualifier.fromCode(accessQualifierCode);
     }
 
-    private JoclArgumentType getArgumentType(int argumentNumber) {
+    private ArgumentAddressQualifier getArgumentAddressQualifier(int argumentNumber){
+        int paramValueInt[] = { 0 };
+        clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_ADDRESS_QUALIFIER, Sizeof.cl_int, Pointer.to(paramValueInt), null);
+        int addressSpaceCode = paramValueInt[0];
+        LOGGER.info(String.format("%d kernel %s argument has address space qualifier: %d", argumentNumber, kernelName, addressSpaceCode));
+        return ArgumentAddressQualifier.fromCode(addressSpaceCode);
+
+    }
+    private JoclArgumentType getArgumentType(int argumentNumber, ArgumentAddressQualifier argumentAddressQualifier) {
         long sizeArray[] = { 0 };
         byte paramValueCharArray[] = new byte[1024];
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_NAME, 0, null, sizeArray);
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_NAME, sizeArray[0], Pointer.to(paramValueCharArray), null);
         String typeName = new String(paramValueCharArray, 0, (int) sizeArray[0] - 1);
         LOGGER.info(String.format("%d kernel %s argument has type: %s", argumentNumber, kernelName, typeName));
-        return argumentFactory.fromName(typeName);
+        return argumentFactory.from(typeName, argumentAddressQualifier);
     }
 
     private String getArgumentName(int argumentNumber) {

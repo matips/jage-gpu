@@ -1,18 +1,22 @@
 package org.jage.gpu.binding;
 
-import static org.junit.Assert.*;
+import com.google.common.collect.Sets;
+import org.apache.bcel.util.ClassLoader;
+import org.jage.gpu.binding.jocl.JoclGpu;
+import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.arrays.CharArray;
+import org.jage.gpu.binding.jocl.arguments.arrays.FloatArray;
+import org.jage.gpu.binding.jocl.arguments.arrays.IntArray;
+import org.jage.gpu.binding.jocl.arguments.localMemory.GpuIntLocalMemory;
+import org.jage.gpu.binding.jocl.arguments.primitives.Short;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.bcel.util.ClassLoader;
-import org.jage.gpu.binding.jocl.JoclGpu;
-import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
-import org.junit.Test;
-
-import com.google.common.collect.Sets;
+import static org.junit.Assert.*;
 
 public class GPUTest {
 
@@ -39,11 +43,11 @@ public class GPUTest {
         assertEquals(ArgumentAccessQualifier.NONE, arguments.get(3).getAccessQualifier());
         assertEquals(ArgumentAccessQualifier.NONE, arguments.get(4).getAccessQualifier());
 
-        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(float[].class), arguments.get(0).getType());
-        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(char[].class), arguments.get(1).getType());
-        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(int[].class), arguments.get(2).getType());
+        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(FloatArray.class), arguments.get(0).getType());
+        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(CharArray.class), arguments.get(1).getType());
+        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(GpuIntLocalMemory.class), arguments.get(2).getType());
         assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(Short.class), arguments.get(3).getType());
-        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(int[].class), arguments.get(4).getType());
+        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(IntArray.class), arguments.get(4).getType());
 
         assertTrue(arguments.get(0).isIn());
         assertFalse(arguments.get(1).isIn());

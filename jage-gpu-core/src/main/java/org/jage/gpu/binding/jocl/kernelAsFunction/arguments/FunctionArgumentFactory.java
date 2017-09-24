@@ -1,16 +1,16 @@
 package org.jage.gpu.binding.jocl.kernelAsFunction.arguments;
 
-import java.lang.reflect.Constructor;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import org.jage.gpu.binding.ArgumentAddressQualifier;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
 import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
 import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
 import org.jage.gpu.helpers.ThrowingFunction;
 import org.reflections.Reflections;
+
+import java.lang.reflect.Constructor;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class FunctionArgumentFactory implements JoclArgumentFactory {
     JoclArgumentFactory baseFactory = DefaultJoclArgumentFactory.INSTANCE;
@@ -39,7 +39,7 @@ public class FunctionArgumentFactory implements JoclArgumentFactory {
     }
 
     @Override
-    public JoclArgumentType fromName(String cTypeName) {
+    public JoclArgumentType from(String cTypeName, ArgumentAddressQualifier argumentAddressQualifier) {
         if (arguments == null)
             init();
 
@@ -47,20 +47,20 @@ public class FunctionArgumentFactory implements JoclArgumentFactory {
                 .filter(type -> type.getNames().contains(cTypeName.trim()))
                 .map(a -> (JoclArgumentType) a)
                 .findAny()
-                .orElseGet(() -> baseFactory.fromName(cTypeName));
+                .orElseGet(() -> baseFactory.from(cTypeName, argumentAddressQualifier));
     }
 
     @Override
-    public <T> JoclArgumentType fromClass(Class<T> aClass) {
+    public <T extends JoclArgumentType> T fromClass(Class<T> aClass) {
         if (arguments == null)
             init();
 
         return arguments.stream()
-                .filter(type -> type.is(aClass))
+                .filter(type -> aClass.isAssignableFrom(type.getClass()))
                 .reduce((joclArgumentType, joclArgumentType2) -> {
                     throw new RuntimeException("There are multiple JoclArgumentTypes matching " + aClass.getName());
                 })
-                .map(a -> (JoclArgumentType) a)
-                .orElseGet(() -> baseFactory.fromClass(aClass));
+                .map(type -> (T) type)
+                .orElseThrow(() -> new RuntimeException("Cannot parse type " + aClass.getName()));
     }
 }

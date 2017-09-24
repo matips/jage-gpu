@@ -1,7 +1,9 @@
 package org.jage.gpu.binding.jocl.arguments;
 
-public interface JoclArgumentFactory {
-    JoclArgumentType fromName(String cTypeName);
+import org.jage.gpu.binding.ArgumentAddressQualifier;
 
-    <T> JoclArgumentType fromClass(Class<T> aClass);
+public interface JoclArgumentFactory {
+    JoclArgumentType from(String cTypeName, ArgumentAddressQualifier argumentAddressQualifier);
+
+    <T extends JoclArgumentType> T fromClass(Class<T> aClass);
 }

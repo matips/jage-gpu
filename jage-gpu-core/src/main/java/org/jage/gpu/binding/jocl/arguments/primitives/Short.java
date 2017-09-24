@@ -21,6 +21,6 @@ public class Short extends JoclPrimitiveType<java.lang.Short> {
 
     @Override
     public ArgumentType toArray() {
-        return DefaultJoclArgumentFactory.INSTANCE.fromClass(short[].class);
+        return DefaultJoclArgumentFactory.INSTANCE.fromClass(Short.class);
     }
 }

@@ -1,11 +1,13 @@
 package org.jage.gpu.binding.jocl.kernelAsFunction.arguments;
 
+import org.jage.gpu.binding.ArgumentAddressQualifier;
 import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
 import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Wraps primitive argument like int or int[]
@@ -25,6 +27,11 @@ public class PrimitiveWrapper<T> implements FunctionArgumentType<T> {
     @Override
     public List<String> getNames() {
         return joclArgumentType.getNames();
+    }
+
+    @Override
+    public Set<ArgumentAddressQualifier> validAddressSpaces() {
+        return joclArgumentType.validAddressSpaces();
     }
 
     @Override

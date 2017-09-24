@@ -5,6 +5,7 @@ import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
 import org.jage.gpu.binding.jocl.arguments.PrimitiveArgument;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.arrays.DoubleArray;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 
@@ -21,6 +22,6 @@ public class Double extends JoclPrimitiveType<java.lang.Double> {
 
     @Override
     public ArgumentType toArray() {
-        return  DefaultJoclArgumentFactory.INSTANCE.fromClass(double[].class);
+        return  DefaultJoclArgumentFactory.INSTANCE.fromClass(DoubleArray.class);
     }
 }

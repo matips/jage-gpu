@@ -13,7 +13,7 @@ public class ShortArray extends JoclArrayType<short[]> {
     }
 
     @Override
-    public void bind(short[] array, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
-        kernelExecution.bindArrayParameter(kernelArgument, Pointer.to(array), Sizeof.cl_short);
+    public void bind(short[] var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
+        kernelExecution.bindArrayParameter(kernelArgument, Pointer.to(var), var.length, Sizeof.cl_short);
     }
 }

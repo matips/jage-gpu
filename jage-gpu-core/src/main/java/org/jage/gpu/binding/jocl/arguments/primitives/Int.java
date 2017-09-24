@@ -5,6 +5,7 @@ import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
 import org.jage.gpu.binding.jocl.arguments.PrimitiveArgument;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.arrays.IntArray;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 
@@ -21,6 +22,6 @@ public class Int extends JoclPrimitiveType<Integer> {
 
     @Override
     public ArgumentType toArray() {
-        return DefaultJoclArgumentFactory.INSTANCE.fromClass(int[].class);
+        return DefaultJoclArgumentFactory.INSTANCE.fromClass(IntArray.class);
     }
 }

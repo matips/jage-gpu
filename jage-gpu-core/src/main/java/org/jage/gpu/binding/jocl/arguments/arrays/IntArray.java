@@ -13,7 +13,7 @@ public class IntArray extends JoclArrayType<int[]> {
     }
 
     @Override
-    public void bind(int[] array, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
-        kernelExecution.bindArrayParameter(kernelArgument, Pointer.to(array), Sizeof.cl_int);
+    public void bind(int[] var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
+        kernelExecution.bindArrayParameter(kernelArgument, Pointer.to(var), var.length, Sizeof.cl_int);
     }
 }

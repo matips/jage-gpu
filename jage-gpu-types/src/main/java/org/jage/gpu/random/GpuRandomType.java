@@ -1,5 +1,6 @@
 package org.jage.gpu.random;
 
+import org.jage.gpu.binding.ArgumentAddressQualifier;
 import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
@@ -8,9 +9,7 @@ import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.GlobalArgument;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @GlobalArgument
 public class GpuRandomType implements FunctionArgumentType<Random> {
@@ -47,6 +46,11 @@ public class GpuRandomType implements FunctionArgumentType<Random> {
     @Override
     public List<String> getNames() {
         return Collections.singletonList("Random");
+    }
+
+    @Override
+    public Set<ArgumentAddressQualifier> validAddressSpaces() {
+        return EnumSet.allOf(ArgumentAddressQualifier.class);
     }
 
     @Override

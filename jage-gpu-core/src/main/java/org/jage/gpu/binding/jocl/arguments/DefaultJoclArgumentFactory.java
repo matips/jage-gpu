@@ -1,12 +1,13 @@
 package org.jage.gpu.binding.jocl.arguments;
 
+import org.jage.gpu.binding.ArgumentAddressQualifier;
+import org.jage.gpu.helpers.ThrowingFunction;
+import org.reflections.Reflections;
+
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.jage.gpu.helpers.ThrowingFunction;
-import org.reflections.Reflections;
 
 public class DefaultJoclArgumentFactory implements JoclArgumentFactory {
 
@@ -30,26 +31,29 @@ public class DefaultJoclArgumentFactory implements JoclArgumentFactory {
     }
 
     @Override
-    public JoclArgumentType fromName(String cTypeName) {
+    public JoclArgumentType from(String cTypeName, ArgumentAddressQualifier argumentAddressQualifier) {
         if (arguments == null)
             initJoclArguments();
 
         return arguments.stream()
                 .filter(type -> type.getNames().contains(cTypeName.trim()))
+                .filter(type -> type.validAddressSpaces().contains(argumentAddressQualifier))
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("Cannot parse type " + cTypeName));
     }
 
     @Override
-    public <T> JoclArgumentType<T> fromClass(Class<T> aClass) {
+    public <T extends JoclArgumentType> T fromClass(Class<T> aClass) {
         if (arguments == null)
             initJoclArguments();
 
         return arguments.stream()
-                .filter(type -> type.is(aClass))
+                .filter(type -> aClass.isAssignableFrom(type.getClass()))
                 .reduce((joclArgumentType, joclArgumentType2) -> {
                     throw new RuntimeException("There are multiple JoclArgumentTypes matching " + aClass.getName());
-                }).orElseThrow(() -> new RuntimeException("Cannot parse type " + aClass.getName()));
+                })
+                .map(type -> (T) type)
+                .orElseThrow(() -> new RuntimeException("Cannot parse type " + aClass.getName()));
     }
 
 }

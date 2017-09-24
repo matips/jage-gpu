@@ -1,12 +1,5 @@
 package org.jage.gpu.executors;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
 import org.jage.gpu.ExternalStepBuilder;
 import org.jage.gpu.KernelCallBack;
 import org.jage.gpu.agent.GpuReader;
@@ -16,6 +9,13 @@ import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.KernelExecution;
 import org.jage.gpu.executors.arguments.DoubleArguments;
 import org.jage.gpu.executors.arguments.IntArguments;
+
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 class GpuExecution {
     private final DoubleArguments doubleArguments;
@@ -99,7 +99,10 @@ class GpuExecution {
         this.doubleArguments = new DoubleArguments(filterArguments(kernelArguments, double[].class));
         this.intArguments = new IntArguments(filterArguments(kernelArguments, int[].class));
         this.globalArguments = kernelArguments.stream()
-                .filter(kernelArgument -> !kernelArgument.getType().is(int[].class) && !kernelArgument.getType().is(double[].class))
+                .filter(kernelArgument ->
+                        !kernelArgument.getType().is(int[].class)
+                                && !kernelArgument.getType().is(double[].class)
+                )
                 .skip(1) //skip first argument - by convection it is number of agents and it filled by KernelExecution
                 .toArray(KernelArgument[]::new);
     }

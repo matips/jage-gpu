@@ -1,2 +1,4 @@
 
-typedef __local int LocalIntArray[];
+typedef struct{
+    __local int * array;
+} LocalIntArray;

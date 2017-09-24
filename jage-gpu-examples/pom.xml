@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>org.jage.gpu</groupId>
-            <artifactId>jage-gpu-random</artifactId>
+            <artifactId>jage-gpu-types</artifactId>
             <version>1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
