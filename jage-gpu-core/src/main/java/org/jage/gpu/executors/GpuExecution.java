@@ -7,6 +7,7 @@ import org.jage.gpu.agent.SubStep;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.KernelExecution;
+import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.GlobalArgument;
 import org.jage.gpu.executors.arguments.DoubleArguments;
 import org.jage.gpu.executors.arguments.IntArguments;
 
@@ -100,8 +101,10 @@ class GpuExecution {
         this.intArguments = new IntArguments(filterArguments(kernelArguments, int[].class));
         this.globalArguments = kernelArguments.stream()
                 .filter(kernelArgument ->
-                        !kernelArgument.getType().is(int[].class)
-                                && !kernelArgument.getType().is(double[].class)
+                        isMarkAsGlobal(kernelArgument) || (
+                                !kernelArgument.getType().is(int[].class)
+                                        && !kernelArgument.getType().is(double[].class)
+                        )
                 )
                 .skip(1) //skip first argument - by convection it is number of agents and it filled by KernelExecution
                 .toArray(KernelArgument[]::new);
@@ -110,7 +113,12 @@ class GpuExecution {
     private List<KernelArgument> filterArguments(List<KernelArgument> kernelArguments, Class argumentType) {
         return kernelArguments.stream()
                 .filter(kernelArgument -> kernelArgument.getType().is(argumentType))
+                .filter(kernelArgument -> !isMarkAsGlobal(kernelArgument))
                 .collect(Collectors.toList());
+    }
+
+    private boolean isMarkAsGlobal(KernelArgument kernelArgument) {
+        return kernelArgument.getType().getClass().getAnnotation(GlobalArgument.class) != null;
     }
 
     public void flush(Kernel kernel) {

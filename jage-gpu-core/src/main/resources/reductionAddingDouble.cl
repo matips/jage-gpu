@@ -3,7 +3,7 @@
 
 __kernel void addingDouble(
         unsigned int length,
-        __local double* scratch,
+        __local double *scratch,
         __constant double *buffer,
         __global double *result
 ) {
@@ -41,9 +41,11 @@ __kernel void addingDouble(
 //     Perform sequentially adding of groups effects.
     long resultCount = length / get_local_size(0) + ((length % get_local_size(0)) != 0 ? 1 : 0);
     barrier(CLK_GLOBAL_MEM_FENCE);
-    if (get_global_id(0) == 0)
+    if (get_global_id(0) == 0) {
         for (int i = 1; i < resultCount; i++) {
             result[0] += result[i];
         }
+    }
+    barrier(CLK_GLOBAL_MEM_FENCE);
 }
 

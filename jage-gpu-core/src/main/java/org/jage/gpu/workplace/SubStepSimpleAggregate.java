@@ -1,11 +1,5 @@
 package org.jage.gpu.workplace;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.agent.ISimpleAgent;
@@ -16,6 +10,12 @@ import org.jage.property.PropertyField;
 import org.jage.workplace.SimpleWorkplace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SubStepSimpleAggregate extends SimpleAggregate {
     private static final Logger LOGGER = LoggerFactory.getLogger(SubStepSimpleAggregate.class);
@@ -38,8 +38,9 @@ public class SubStepSimpleAggregate extends SimpleAggregate {
                 .collect(Collectors.toList());
 
         while (!remainSubStepAgents.isEmpty()) {
-            preExternalFlush();
+            Runnable callback = preExternalFlush();
             externalExecutorRegistry.flush();
+            callback.run();
             Iterator<SubStepAgent> iterator = remainSubStepAgents.iterator();
             while (iterator.hasNext()) {
                 SubStepAgent agent = iterator.next();
@@ -50,8 +51,9 @@ public class SubStepSimpleAggregate extends SimpleAggregate {
         }
     }
 
-    protected void preExternalFlush() {
+    protected Runnable preExternalFlush() {
         //bind some global variables;
+        return () -> {};
     }
 
     @Override

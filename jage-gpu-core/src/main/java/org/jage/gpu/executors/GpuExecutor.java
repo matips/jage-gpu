@@ -1,9 +1,9 @@
 package org.jage.gpu.executors;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.jage.gpu.ExternalStepBuilder;
 import org.jage.gpu.binding.Kernel;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class GpuExecutor implements ExternalExecutor {
 
