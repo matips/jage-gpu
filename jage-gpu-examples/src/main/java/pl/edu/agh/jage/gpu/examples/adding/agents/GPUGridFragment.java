@@ -1,14 +1,13 @@
 package pl.edu.agh.jage.gpu.examples.adding.agents;
 
-import java.util.List;
-import java.util.Random;
-
 import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.gpu.agent.GpuAgent;
 import org.jage.gpu.agent.SubStep;
 import org.jage.gpu.executors.ExternalExecutor;
-
 import pl.edu.agh.jage.gpu.examples.IGridFragment;
+
+import java.util.List;
+import java.util.Random;
 
 public class GPUGridFragment extends GpuAgent implements IGridFragment {
 
@@ -31,7 +30,7 @@ public class GPUGridFragment extends GpuAgent implements IGridFragment {
     @Override
     public void step() {
         SubStep subStep = addingPos
-                .createStep()
+                .createStep(0)
                 .putArg(summary)
                 .putArg(position.get(0))
                 .putArg(position.get(1))

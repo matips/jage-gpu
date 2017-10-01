@@ -7,7 +7,7 @@ import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
 import org.jage.gpu.binding.jocl.arguments.arrays.DoubleArray;
-import org.jage.gpu.binding.jocl.arguments.primitives.Int;
+import org.jage.gpu.executors.arguments.AgentsCount;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ public class KernelAsFunctionGPUTest {
         for (int i = 0; i < 4; i++) {
             Assert.assertEquals(ArgumentAccessQualifier.NONE, arguments.get(i).getAccessQualifier());
         }
-        Assert.assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(Int.class), arguments.get(0).getType());
+        Assert.assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(AgentsCount.class), arguments.get(0).getType());
         for (int i = 1; i < 4; i++) {
             assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(DoubleArray.class), arguments.get(i).getType());
         }

@@ -31,7 +31,7 @@ public class GPUGridFragment extends GpuAgent implements IGridFragment {
         double left = (-random.nextDouble()) * Math.PI;
         double right = random.nextDouble() * Math.PI;
         SubStep subStep = integralOnGpu
-                .createStep()
+                .createStep(0)
                 .putArg(left)
                 .putArg(right)
                 .build(gpuReader -> energy += gpuReader.readDouble());

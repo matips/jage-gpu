@@ -71,7 +71,7 @@ public class KernelAsFunctionJoclGpu implements GPU {
 
     private String generateWrapper(String functionName, Kernel baseFunction) {
 
-        String kernelArgumentsText = "unsigned int height";
+        String kernelArgumentsText = "AgentsCount height";
         String functionCallArguments = "";
 
         for (KernelArgument functionArgument : baseFunction.getArguments()) {

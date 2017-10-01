@@ -89,8 +89,8 @@ public class JoclGpu implements GPU {
             long sizeArray[] = {0};
             clGetPlatformInfo(platform, CL_PLATFORM_VERSION, 0, null, sizeArray);
             byte buffer[] = new byte[(int) sizeArray[0]];
-            clGetPlatformInfo(platform, CL_PLATFORM_VERSION,
-                    buffer.length, Pointer.to(buffer), null);
+            clGetPlatformInfo(platform, CL_PLATFORM_VERSION, buffer.length, Pointer.to(buffer), null);
+
             String versionString = new String(buffer, 0, buffer.length - 1);
             LOGGER.info("Platform version: " + versionString);
             String versionNumberString = versionString.substring(7, 10);
@@ -122,6 +122,10 @@ public class JoclGpu implements GPU {
             cl_device_id devices[] = new cl_device_id[numDevices];
             clGetDeviceIDs(platform, deviceType, numDevices, devices, null);
             device = devices[deviceIndex];
+
+            int[] maxConstantArgs = new int[1];
+            clGetDeviceInfo(device, CL_DEVICE_MAX_CONSTANT_ARGS, Sizeof.cl_int, Pointer.to(maxConstantArgs), null);
+            LOGGER.info("Max constant args: " + maxConstantArgs[0]);
 
             // Create a context for the selected device
             context = clCreateContext(
@@ -177,7 +181,7 @@ public class JoclGpu implements GPU {
             String replacement;
             try {
                 replacement = Utils.getResourceAsString(fileName);
-            } catch (IOException e) {
+            } catch (IOException | NullPointerException e) {
                 LOGGER.warn("Cannot find file " + fileName);
                 replacement = regexMatcher.group();
             }

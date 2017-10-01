@@ -1,10 +1,12 @@
-package org.jage.gpu.binding.jocl;
+package org.jage.gpu.binding.jocl.argumentAutoConfig;
 
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
-import org.jage.gpu.binding.ArgumentAddressQualifier;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
+import org.jage.gpu.binding.jocl.AutoConfigGPU;
+import org.jage.gpu.binding.jocl.JOCLKernel;
+import org.jage.gpu.binding.jocl.JoclGpu;
 import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.FunctionArgumentFactory;
 
 import java.io.File;
@@ -14,11 +16,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.jage.gpu.binding.ArgumentAddressQualifier.*;
+import static org.jage.gpu.binding.ArgumentTypeQualifier.CONST;
+
 /**
  * Configure In/Out arguments by address space:
  * - global arrays are out arguments
  * - constant arrays are in parameters
  * - first parameter should be "int" refers to agents number
+ * - InOutDouble type is in/out variable
  */
 public class AddressSpaceAutoConfiguration extends JoclGpu implements AutoConfigGPU {
     public AddressSpaceAutoConfiguration() throws IOException {
@@ -32,12 +38,18 @@ public class AddressSpaceAutoConfiguration extends JoclGpu implements AutoConfig
 
         List<KernelArgument> arguments = joclKernel.getArguments();
         Set<String> outArguments = arguments.stream()
-                .filter(kernelArgument -> kernelArgument.getAddressQualifier().equals(ArgumentAddressQualifier.GLOBAL))
+                .filter(kernelArgument -> kernelArgument.getAddressQualifier().equals(GLOBAL)
+                        && !Sets.newHashSet(CONST).contains(kernelArgument.getArgumentTypeQualifier())
+                )
                 .map(KernelArgument::getArgumentName)
                 .collect(Collectors.toSet());
 
         Set<String> inArguments = arguments.stream()
-                .filter(kernelArgument -> Sets.newHashSet(ArgumentAddressQualifier.CONSTANT, ArgumentAddressQualifier.PRIVATE).contains(kernelArgument.getAddressQualifier()))
+                .filter(kernelArgument ->
+                        Sets.newHashSet(CONSTANT, PRIVATE).contains(kernelArgument.getAddressQualifier())
+                                || Sets.newHashSet(CONST).contains(kernelArgument.getArgumentTypeQualifier())
+                                || kernelArgument.getType().getCName().contains("InOut")
+                )
                 .map(KernelArgument::getArgumentName)
                 .collect(Collectors.toSet());
         return buildKernel(kernelFileContent, kernelName, inArguments, outArguments);

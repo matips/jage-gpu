@@ -1,6 +1,7 @@
 package org.jage.gpu.binding.jocl.kernelAsFunction.arguments;
 
 import org.jage.gpu.binding.ArgumentAddressQualifier;
+import org.jage.gpu.binding.ArgumentTypeQualifier;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
 import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
 import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
@@ -23,7 +24,7 @@ public class FunctionArgumentFactory implements JoclArgumentFactory {
                 .map(aClass -> {
                     if (FunctionArgumentType.class.isAssignableFrom(aClass))
                         return (Class<? extends FunctionArgumentType>) aClass;
-                    throw new RuntimeException(aClass.getName() + " is annotated with " + GlobalArgument.class.getName());
+                    throw new RuntimeException(aClass.getName() + " is annotated with " + GlobalArgument.class.getName() + " but is not FunctionArtumentType");
                 })
                 .map((ThrowingFunction<Class<? extends FunctionArgumentType>, Constructor<? extends FunctionArgumentType>>) aClass -> aClass
                         .getDeclaredConstructor())
@@ -39,7 +40,7 @@ public class FunctionArgumentFactory implements JoclArgumentFactory {
     }
 
     @Override
-    public JoclArgumentType from(String cTypeName, ArgumentAddressQualifier argumentAddressQualifier) {
+    public JoclArgumentType from(String cTypeName, ArgumentAddressQualifier argumentAddressQualifier, ArgumentTypeQualifier argumentTypeQualifier) {
         if (arguments == null)
             init();
 
@@ -47,7 +48,7 @@ public class FunctionArgumentFactory implements JoclArgumentFactory {
                 .filter(type -> type.getNames().contains(cTypeName.trim()))
                 .map(a -> (JoclArgumentType) a)
                 .findAny()
-                .orElseGet(() -> baseFactory.from(cTypeName, argumentAddressQualifier));
+                .orElseGet(() -> baseFactory.from(cTypeName, argumentAddressQualifier, argumentTypeQualifier));
     }
 
     @Override

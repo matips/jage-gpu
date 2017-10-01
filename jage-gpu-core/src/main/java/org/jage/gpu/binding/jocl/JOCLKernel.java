@@ -47,51 +47,71 @@ public class JOCLKernel implements Kernel {
             String argumentName = getArgumentName(paramNumber);
             ArgumentAccessQualifier accessQualifier = getArgumentAccessQualifierCode(paramNumber);
             ArgumentAddressQualifier argumentAddressQualifier = getArgumentAddressQualifier(paramNumber);
-            JoclArgumentType typeName = getArgumentType(paramNumber, argumentAddressQualifier);
+            ArgumentTypeQualifier argumentTypeQualifier = getArgumentTypeQualifier(paramNumber);
+            JoclArgumentType typeName = getArgumentType(paramNumber, argumentAddressQualifier, argumentTypeQualifier);
             boolean isIn = inArguments.contains(argumentName);
             boolean isOut = outArguments.contains(argumentName);
             LOGGER.info("Argument " + argumentName + " isIn = " + isIn);
             LOGGER.info("Argument " + argumentName + " isOut = " + isIn);
 
-            argumentsTemp.add(new KernelArgument(paramNumber, argumentName, accessQualifier, typeName, argumentAddressQualifier, isIn, isOut));
+            argumentsTemp.add(new KernelArgument(
+                    paramNumber,
+                    argumentName,
+                    accessQualifier,
+                    typeName,
+                    argumentAddressQualifier,
+                    argumentTypeQualifier,
+                    isIn,
+                    isOut)
+            );
         }
         arguments = Collections.unmodifiableList(argumentsTemp);
     }
 
     private int getNumArgs() {
-        int paramValueInt[] = { 0 };
+        int paramValueInt[] = {0};
         clGetKernelInfo(kernel, CL_KERNEL_NUM_ARGS, Sizeof.cl_uint, Pointer.to(paramValueInt), null);
         return paramValueInt[0];
     }
 
     private ArgumentAccessQualifier getArgumentAccessQualifierCode(int argumentNumber) {
-        int paramValueInt[] = { 0 };
+        int paramValueInt[] = {0};
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_ACCESS_QUALIFIER, Sizeof.cl_int, Pointer.to(paramValueInt), null);
         int accessQualifierCode = paramValueInt[0];
         LOGGER.info(String.format("%d kernel %s argument has access qualifier: %d", argumentNumber, kernelName, accessQualifierCode));
         return ArgumentAccessQualifier.fromCode(accessQualifierCode);
     }
 
-    private ArgumentAddressQualifier getArgumentAddressQualifier(int argumentNumber){
-        int paramValueInt[] = { 0 };
+    private ArgumentAddressQualifier getArgumentAddressQualifier(int argumentNumber) {
+        int paramValueInt[] = {0};
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_ADDRESS_QUALIFIER, Sizeof.cl_int, Pointer.to(paramValueInt), null);
         int addressSpaceCode = paramValueInt[0];
         LOGGER.info(String.format("%d kernel %s argument has address space qualifier: %d", argumentNumber, kernelName, addressSpaceCode));
         return ArgumentAddressQualifier.fromCode(addressSpaceCode);
 
     }
-    private JoclArgumentType getArgumentType(int argumentNumber, ArgumentAddressQualifier argumentAddressQualifier) {
-        long sizeArray[] = { 0 };
+
+    private ArgumentTypeQualifier getArgumentTypeQualifier(int argumentNumber) {
+        long paramValueInt[] = {0};
+        clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_QUALIFIER, Sizeof.cl_long, Pointer.to(paramValueInt), null);
+        long addressTypeCode = paramValueInt[0];
+        LOGGER.info(String.format("%d kernel %s argument has address type qualifier: %d", argumentNumber, kernelName, addressTypeCode));
+        return ArgumentTypeQualifier.fromCode(addressTypeCode);
+
+    }
+
+    private JoclArgumentType getArgumentType(int argumentNumber, ArgumentAddressQualifier argumentAddressQualifier, ArgumentTypeQualifier argumentTypeQualifier) {
+        long sizeArray[] = {0};
         byte paramValueCharArray[] = new byte[1024];
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_NAME, 0, null, sizeArray);
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_NAME, sizeArray[0], Pointer.to(paramValueCharArray), null);
         String typeName = new String(paramValueCharArray, 0, (int) sizeArray[0] - 1);
         LOGGER.info(String.format("%d kernel %s argument has type: %s", argumentNumber, kernelName, typeName));
-        return argumentFactory.from(typeName, argumentAddressQualifier);
+        return argumentFactory.from(typeName, argumentAddressQualifier, argumentTypeQualifier);
     }
 
     private String getArgumentName(int argumentNumber) {
-        long sizeArray[] = { 0 };
+        long sizeArray[] = {0};
         byte paramValueCharArray[] = new byte[1024];
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_NAME, 0, null, sizeArray);
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_NAME, sizeArray[0], Pointer.to(paramValueCharArray), null);
@@ -109,8 +129,8 @@ public class JOCLKernel implements Kernel {
     }
 
     @Override
-    public KernelExecution newExecution(int elementsSize) {
-        return new JOCLKernelExecution(kernel, gpu.getContext(), gpu.getCommandQueue(), elementsSize, argumentFactory);
+    public KernelExecution newExecution(int globalWorkers) {
+        return new JOCLKernelExecution(kernel, gpu.getContext(), gpu.getCommandQueue(), globalWorkers, argumentFactory);
     }
 
 }

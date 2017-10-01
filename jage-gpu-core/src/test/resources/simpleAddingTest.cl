@@ -1,4 +1,5 @@
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
+#include "globalParams.cl"
 
 __kernel void adding(
     double a1,
@@ -10,7 +11,7 @@ __kernel void adding(
 }
 
 __kernel void simpleAddingTest(
-    unsigned int height,
+    AgentsCount height,
     __global double* a1,
     __global double* a2,
     __global double* result
@@ -20,5 +21,25 @@ __kernel void simpleAddingTest(
     int globalIndex = get_global_id(0);
     if (globalIndex < height){
         adding(a1[globalIndex], a2[globalIndex], &result[globalIndex]);
+    }
+}
+
+__kernel void twoLevelTests(
+    AgentsCount height,
+    __global double* a1,
+    __global double* a2,
+    __global int* l2referce,
+
+    AgentsCount level2,
+    __global double* result,
+    __global double* a3
+
+    )
+{
+
+    int globalIndex = get_global_id(0);
+    int gi = globalIndex;
+    if (gi < height){
+        result[gi] = a1[gi] + a2[gi] + a3[l2referce[gi]];
     }
 }

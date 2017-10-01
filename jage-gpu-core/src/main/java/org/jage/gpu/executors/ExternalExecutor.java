@@ -11,7 +11,7 @@ public interface ExternalExecutor {
      */
     void flush();
 
-    ExternalStepBuilder createStep();
+    ExternalStepBuilder createStep(int agentIndex);
 
     void bindGlobalArgument(Object argument);
 }

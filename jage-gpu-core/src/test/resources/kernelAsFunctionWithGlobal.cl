@@ -1,4 +1,5 @@
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
+#include "globalParams.cl"
 
 typedef int global_int;
 

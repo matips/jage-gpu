@@ -16,11 +16,11 @@ public class JOCLKernelExecution implements KernelExecution {
     private final cl_kernel kernel;
     private final cl_context context;
     private final cl_command_queue commandQueue;
-    private final int elementsSize;
+    private final int globalWorkers;
     private final long localWorkSize = Long.parseLong(System.getProperty("clLocalWorkSize", "0"));
     private final AtomicBoolean wasClose = new AtomicBoolean(false);
     /**
-     * Bind out paramters (we will need to read it from GPU memory)
+     * Bind out parameters (we will need to read it from GPU memory)
      */
     private final Map<KernelArgument, MemoryAndPointer> binded = new HashMap<>();
     private final JoclArgumentFactory argumentFactory;
@@ -55,21 +55,20 @@ public class JOCLKernelExecution implements KernelExecution {
 
     }
 
-    public JOCLKernelExecution(cl_kernel kernel, cl_context context, cl_command_queue commandQueue, int elementsSize, JoclArgumentFactory argumentFactory) {
+    public JOCLKernelExecution(cl_kernel kernel, cl_context context, cl_command_queue commandQueue, int globalWorkers, JoclArgumentFactory argumentFactory) {
         this.kernel = kernel;
         this.context = context;
         this.commandQueue = commandQueue;
-        this.elementsSize = elementsSize;
+        this.globalWorkers = globalWorkers;
         this.argumentFactory = argumentFactory;
 
     }
 
     @Override
     public void execute() {
-        long height = nextPowerOf2(this.elementsSize);
+        long height = nextPowerOf2(this.globalWorkers);
         long globalWorkSize = height + localWorkSize - (height % (localWorkSize == 0 ? 1 : localWorkSize));
 
-        bindParameter(0, Sizeof.cl_int, Pointer.to(new long[] { globalWorkSize }));
         clEnqueueNDRangeKernel(commandQueue, kernel, 1, null,
                 new long[] { globalWorkSize }, localWorkSize != 0 ? new long[] { localWorkSize } : null,
                 0, null, null);

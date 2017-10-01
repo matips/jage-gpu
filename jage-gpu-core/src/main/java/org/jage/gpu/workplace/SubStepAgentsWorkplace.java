@@ -1,19 +1,18 @@
 package org.jage.gpu.workplace;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.agent.ISimpleAgent;
-import org.jage.gpu.agent.SubStepAgent;
+import org.jage.gpu.Resumable;
 import org.jage.gpu.executors.ExternalExecutorRegistry;
 import org.jage.property.PropertyField;
 import org.jage.workplace.SimpleWorkplace;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SubStepAgentsWorkplace extends SimpleWorkplace {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(SubStepAgentsWorkplace.class);
@@ -29,27 +28,21 @@ public class SubStepAgentsWorkplace extends SimpleWorkplace {
 
     protected void executeStepsOnAgents() {
 
-        SubStepAgentsWorkplace.this.agents.values().forEach(ISimpleAgent::step);
-        List<SubStepAgent> remainSubStepAgents = SubStepAgentsWorkplace.this.agents.values().stream()
-                .filter(agent -> agent instanceof SubStepAgent)
-                .map(agent -> (SubStepAgent) agent)
+        agents.values().forEach(ISimpleAgent::step);
+
+        executeSubSteps();
+    }
+
+    void executeSubSteps() {
+        List<Resumable> remainSubStepAgents = agents.values().stream()
+                .filter(agent -> agent instanceof Resumable)
+                .map(agent -> (Resumable) agent)
                 .collect(Collectors.toList());
 
         while (!remainSubStepAgents.isEmpty()) {
-            preExternalFlush();
             externalExecutorRegistry.flush();
-            Iterator<SubStepAgent> iterator = remainSubStepAgents.iterator();
-            while (iterator.hasNext()) {
-                SubStepAgent agent = iterator.next();
-                if (agent.resume()) {
-                    iterator.remove();
-                }
-            }
+            remainSubStepAgents.removeIf(Resumable::resume);
         }
-    }
-
-    protected void preExternalFlush() {
-        //bind some global variables;
     }
 
     @Override

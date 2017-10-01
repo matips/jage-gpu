@@ -28,6 +28,7 @@ public class RandomParamterTest {
         Random random = new Random();
         double[] resultArray = new double[20];
 
+        kernelExecution.bindParameter(kernel.getArguments().get(0), 20);
         kernelExecution.bindParameter(kernel.getArguments().get(1), random);
         kernelExecution.bindParameter(kernel.getArguments().get(2), resultArray);
         kernelExecution.execute();

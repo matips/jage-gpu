@@ -1,6 +1,12 @@
 package org.jage.gpu.executors;
 
-import static org.junit.Assert.assertEquals;
+import com.google.common.collect.Sets;
+import org.apache.bcel.util.ClassLoader;
+import org.jage.gpu.agent.SubStep;
+import org.jage.gpu.binding.Kernel;
+import org.jage.gpu.binding.jocl.JoclGpu;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,14 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.bcel.util.ClassLoader;
-import org.jage.gpu.agent.SubStep;
-import org.jage.gpu.binding.Kernel;
-import org.jage.gpu.binding.jocl.JoclGpu;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.google.common.collect.Sets;
+import static org.junit.Assert.assertEquals;
 
 public class GpuSubStepTestWithGlobalArgument {
     private final static File kernelSource = new File(ClassLoader.getSystemResource("simpleMultipleWithGlobalTest.cl").getFile());
@@ -39,7 +38,7 @@ public class GpuSubStepTestWithGlobalArgument {
         double a1 = random.nextDouble();
         for (int i = 0; i < 40; i++) {
             double a2 = random.nextDouble();
-            subSteps.add(instance.createStep()
+            subSteps.add(instance.createStep(0)
                     .putArg(a2)
                     .build(gpuReader -> {
                         assertEquals("Different on " + callackCalls.get() + " comparation", a1 * a2, gpuReader.readDouble(), 1e-20);

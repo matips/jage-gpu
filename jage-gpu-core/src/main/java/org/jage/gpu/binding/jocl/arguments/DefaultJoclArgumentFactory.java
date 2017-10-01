@@ -1,6 +1,7 @@
 package org.jage.gpu.binding.jocl.arguments;
 
 import org.jage.gpu.binding.ArgumentAddressQualifier;
+import org.jage.gpu.binding.ArgumentTypeQualifier;
 import org.jage.gpu.helpers.ThrowingFunction;
 import org.reflections.Reflections;
 
@@ -16,7 +17,7 @@ public class DefaultJoclArgumentFactory implements JoclArgumentFactory {
     private List<JoclArgumentType> arguments;
 
     public void initJoclArguments() {
-        Reflections reflections = new Reflections("org");
+        Reflections reflections = new Reflections("org.jage.gpu");
         Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(PrimitiveArgument.class);
         arguments = annotated.stream()
                 .map(aClass -> {
@@ -31,13 +32,20 @@ public class DefaultJoclArgumentFactory implements JoclArgumentFactory {
     }
 
     @Override
-    public JoclArgumentType from(String cTypeName, ArgumentAddressQualifier argumentAddressQualifier) {
+    public JoclArgumentType from(String cTypeName, ArgumentAddressQualifier argumentAddressQualifier, ArgumentTypeQualifier argumentTypeQualifier) {
         if (arguments == null)
             initJoclArguments();
 
+        ArgumentAddressQualifier searchArgumentAddressQualifier;
+        if (argumentTypeQualifier == ArgumentTypeQualifier.CONST) { //it is hack, kernels has limit of constant variables
+            searchArgumentAddressQualifier = ArgumentAddressQualifier.CONSTANT;
+        } else {
+            searchArgumentAddressQualifier = argumentAddressQualifier;
+        }
+
         return arguments.stream()
                 .filter(type -> type.getNames().contains(cTypeName.trim()))
-                .filter(type -> type.validAddressSpaces().contains(argumentAddressQualifier))
+                .filter(type -> type.validAddressSpaces().contains(searchArgumentAddressQualifier))
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("Cannot parse type " + cTypeName));
     }

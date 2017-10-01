@@ -7,5 +7,5 @@ public interface Kernel {
 
     List<KernelArgument> getArguments();
 
-    KernelExecution newExecution(int elementsSize);
+    KernelExecution newExecution(int globalWorkers);
 }

@@ -2,8 +2,9 @@ package org.jage.gpu.binding.jocl;
 
 import org.apache.bcel.util.ClassLoader;
 import org.jage.gpu.binding.*;
+import org.jage.gpu.binding.jocl.argumentAutoConfig.AddressSpaceAutoConfiguration;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
-import org.jage.gpu.binding.jocl.arguments.primitives.Int;
+import org.jage.gpu.executors.arguments.AgentsCount;
 import org.junit.Test;
 
 import java.io.File;
@@ -36,7 +37,7 @@ public class AddressSpaceConfigurationGPUTest {
         for (int i = 0; i < 4; i++) {
             assertEquals(ArgumentAccessQualifier.NONE, arguments.get(i).getAccessQualifier());
         }
-        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(Int.class), arguments.get(0).getType());
+        assertEquals(DefaultJoclArgumentFactory.INSTANCE.fromClass(AgentsCount.class), arguments.get(0).getType());
 
         assertThat(arguments.get(0).getAddressQualifier()).isEqualTo(ArgumentAddressQualifier.PRIVATE);
         assertThat(arguments.get(1).getAddressQualifier()).isEqualTo(ArgumentAddressQualifier.PRIVATE);

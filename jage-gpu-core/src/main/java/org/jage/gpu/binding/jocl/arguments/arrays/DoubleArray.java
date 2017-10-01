@@ -12,6 +12,10 @@ public class DoubleArray extends JoclArrayType<double[]> {
         super(double[].class, "double*");
     }
 
+    protected DoubleArray(String... cNames) {
+        super(double[].class, cNames);
+    }
+
     @Override
     public void bind(double[] var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
         kernelExecution.bindArrayParameter(kernelArgument, Pointer.to(var), var.length, Sizeof.cl_double);

@@ -45,6 +45,7 @@ public class GpuExecutorTest {
         for (int i = 0; i < 3; i++) {
             kernelExecution.bindParameter(kernel.getArguments().get(i + 1), arrays[i]);
         }
+        kernelExecution.bindParameter(kernel.getArguments().get(0), 20);
         kernelExecution.execute();
         for (int i = 0; i < 20; i++) {
             assertEquals(arrays[0][i] + arrays[1][i], arrays[2][i], 0.00001);
@@ -67,6 +68,7 @@ public class GpuExecutorTest {
         for (int i = 0; i < 3; i++) {
             kernelExecution.bindParameter(kernel.getArguments().get(i + 1), arrays[i]);
         }
+        kernelExecution.bindParameter(kernel.getArguments().get(0), 20);
         kernelExecution.execute();
         for (int i = 0; i < 20; i++) {
             assertEquals(arrays[0][i] + arrays[1][i], arrays[2][i], 0.00001);
@@ -92,6 +94,7 @@ public class GpuExecutorTest {
         }
         kernelExecution.bindParameter(kernel.getArguments().get(3), 10);
         kernelExecution.bindParameter(kernel.getArguments().get(4), arrays[2]);
+        kernelExecution.bindParameter(kernel.getArguments().get(0), 20);
         kernelExecution.execute();
         for (int i = 0; i < 20; i++) {
             assertEquals((arrays[0][i] + arrays[1][i])*10, arrays[2][i], 0.00001);
@@ -118,6 +121,7 @@ public class GpuExecutorTest {
         for (int i = 0; i < 2; i++) {
             kernelExecution.bindParameter(kernel.getArguments().get(i + 1), arrays[i]);
         }
+        kernelExecution.bindParameter(kernel.getArguments().get(0), 20);
         kernelExecution.execute();
         for (int i = 0; i < 20; i++) {
             assertEquals(arrays[2][i], arrays[1][i], 0.00001);

@@ -1,12 +1,13 @@
 package org.jage.gpu.agent;
 
+import org.jage.address.agent.AgentAddress;
+import org.jage.address.agent.AgentAddressSupplier;
+import org.jage.gpu.Resumable;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.jage.address.agent.AgentAddress;
-import org.jage.address.agent.AgentAddressSupplier;
-
-public abstract class SubStepAgent extends org.jage.agent.SimpleAgent {
+public abstract class SubStepAgent extends org.jage.agent.SimpleAgent implements Resumable {
     Queue<SubStep> subSteps = new LinkedList<>();
 
     public SubStepAgent(AgentAddress address) {
@@ -17,7 +18,8 @@ public abstract class SubStepAgent extends org.jage.agent.SimpleAgent {
         super(supplier);
     }
 
-    protected void postponeStep(SubStep step) {
+    @Override
+    public void postponeStep(SubStep step) {
         subSteps.add(step);
     }
 
@@ -26,6 +28,7 @@ public abstract class SubStepAgent extends org.jage.agent.SimpleAgent {
      *
      * @return true if all substeps are finished, false otherwise
      */
+    @Override
     public boolean resume() {
         SubStep head = subSteps.peek();
         while (head != null && head.canExecute()) {

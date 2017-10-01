@@ -29,9 +29,9 @@ public class GpuRandomGridContainer extends GpuGridContainer {
     }
 
     @Override
-    protected void preExternalFlush() {
+    public void step() {
         ExternalExecutor randomTestExecutor = externalExecutorRegistry.get("random_test");
         randomTestExecutor.bindGlobalArgument(random);
-        super.preExternalFlush();
+        super.step();
     }
 }

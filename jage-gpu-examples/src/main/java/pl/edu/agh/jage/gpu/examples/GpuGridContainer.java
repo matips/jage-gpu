@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
-public class GpuGridContainer extends SubStepAgentsWorkplace {
+public abstract class GpuGridContainer extends SubStepAgentsWorkplace {
 
     protected Class<GPUGridFragment> type = GPUGridFragment.class;
     private long startTime;
@@ -52,6 +52,7 @@ public class GpuGridContainer extends SubStepAgentsWorkplace {
             }
         }
     }
+
 
     @Override
     public boolean finish() throws ComponentException {

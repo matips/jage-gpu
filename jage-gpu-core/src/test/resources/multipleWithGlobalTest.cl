@@ -1,8 +1,8 @@
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
-
+#include "globalParams.cl"
 
 __kernel void multipleTest(
-    unsigned int height,
+    AgentsCount height,
     double a1,
     __constant double* a2,
     __global double* result

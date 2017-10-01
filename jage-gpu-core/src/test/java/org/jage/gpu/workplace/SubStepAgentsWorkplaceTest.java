@@ -1,15 +1,6 @@
 package org.jage.gpu.workplace;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.google.common.collect.Sets;
 import org.apache.bcel.util.ClassLoader;
 import org.jage.address.agent.AgentAddress;
 import org.jage.agent.AggregateActionService;
@@ -24,7 +15,15 @@ import org.jage.gpu.executors.SimpleGpuExecutorRegistry;
 import org.jage.platform.component.exception.ComponentException;
 import org.junit.Test;
 
-import com.google.common.collect.Sets;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 public class SubStepAgentsWorkplaceTest {
     public static final String SOURCE_FILENAME = "simpleAddingTest.cl";
@@ -71,7 +70,7 @@ public class SubStepAgentsWorkplaceTest {
                 public void step() {
                     double next = random.nextDouble();
                     expectedResults[finalI] += next;
-                    SubStep subStep = simpleAddingOnGpu.createStep()
+                    SubStep subStep = simpleAddingOnGpu.createStep(0)
                             .putArg(sum)
                             .putArg(next)
                             .build(gpuReader -> sum = tempSum[finalI] = gpuReader.readDouble());
@@ -135,7 +134,7 @@ public class SubStepAgentsWorkplaceTest {
                 public void step() {
                     int next = random.nextInt() % 300 + 1;
                     expectedResults[finalI] *= next;
-                    SubStep subStep = simpleAddingOnGpu.createStep()
+                    SubStep subStep = simpleAddingOnGpu.createStep(0)
                             .putArg(sum)
                             .putArg(next)
                             .build(gpuReader -> sum = tempResults[finalI] = gpuReader.readInt());

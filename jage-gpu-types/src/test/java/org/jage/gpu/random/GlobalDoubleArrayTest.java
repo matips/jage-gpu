@@ -2,7 +2,7 @@ package org.jage.gpu.random;
 
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
-import org.jage.gpu.binding.jocl.AddressSpaceAutoConfiguration;
+import org.jage.gpu.binding.jocl.argumentAutoConfig.AddressSpaceAutoConfiguration;
 import org.jage.gpu.global.arrays.GlobalDoubleArray;
 import org.junit.Test;
 

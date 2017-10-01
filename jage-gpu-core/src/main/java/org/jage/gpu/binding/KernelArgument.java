@@ -8,13 +8,15 @@ public class KernelArgument {
     private final boolean isIn;
     private final boolean isOut;
     private final ArgumentAddressQualifier argumentAddressQualifier;
+    private final ArgumentTypeQualifier argumentTypeQualifier;
 
-    public KernelArgument(int argumentIndex, String argumentName, ArgumentAccessQualifier accessQualifier, ArgumentType type, ArgumentAddressQualifier argumentAddressQualifier, boolean isIn, boolean isOut) {
+    public KernelArgument(int argumentIndex, String argumentName, ArgumentAccessQualifier accessQualifier, ArgumentType type, ArgumentAddressQualifier argumentAddressQualifier, ArgumentTypeQualifier argumentTypeQualifier, boolean isIn, boolean isOut) {
         this.argumentIndex = argumentIndex;
         this.argumentName = argumentName;
         this.accessQualifier = accessQualifier;
         this.type = type;
         this.argumentAddressQualifier = argumentAddressQualifier;
+        this.argumentTypeQualifier = argumentTypeQualifier;
         this.isIn = isIn;
         this.isOut = isOut;
     }
@@ -37,6 +39,10 @@ public class KernelArgument {
 
     public ArgumentAddressQualifier getAddressQualifier() {
         return argumentAddressQualifier;
+    }
+
+    public ArgumentTypeQualifier getArgumentTypeQualifier() {
+        return argumentTypeQualifier;
     }
 
     public boolean isOut() {

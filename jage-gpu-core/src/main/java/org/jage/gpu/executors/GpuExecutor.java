@@ -22,8 +22,8 @@ public class GpuExecutor implements ExternalExecutor {
     }
 
     @Override
-    public ExternalStepBuilder createStep() {
-        return executionToFlush.get().getStepBuilder();
+    public ExternalStepBuilder createStep(int agentIndex) {
+        return executionToFlush.get().getStepBuilder(agentIndex);
     }
 
     @Override
