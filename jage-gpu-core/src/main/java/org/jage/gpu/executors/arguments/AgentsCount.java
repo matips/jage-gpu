@@ -1,16 +1,15 @@
 package org.jage.gpu.executors.arguments;
 
 import org.jage.gpu.binding.ArgumentType;
-import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
-import org.jage.gpu.binding.jocl.arguments.PrimitiveArgument;
+import org.jage.gpu.binding.jocl.arguments.JoclKernelArgument;
 import org.jage.gpu.binding.jocl.arguments.arrays.IntArray;
 import org.jage.gpu.binding.jocl.arguments.primitives.JoclPrimitiveType;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 
-@PrimitiveArgument
+@JoclKernelArgument
 public class AgentsCount extends JoclPrimitiveType<Integer> {
 
     public static final String AGENTS_COUNT = "AgentsCount";
@@ -20,7 +19,7 @@ public class AgentsCount extends JoclPrimitiveType<Integer> {
     }
 
     @Override
-    public void bind(Integer var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
+    public void bind(Integer var, JOCLKernelExecution kernelExecution, org.jage.gpu.binding.KernelArgument kernelArgument) {
         kernelExecution.bindParameter(kernelArgument, Pointer.to(new int[] { var }), Sizeof.cl_uint);
     }
 

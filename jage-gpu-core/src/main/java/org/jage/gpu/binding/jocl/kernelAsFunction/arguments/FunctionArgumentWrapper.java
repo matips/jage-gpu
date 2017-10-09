@@ -12,21 +12,16 @@ import java.util.Set;
 /**
  * Wraps primitive argument like int or int[]
  */
-public class PrimitiveWrapper<T> implements FunctionArgumentType<T> {
+public class FunctionArgumentWrapper<T> implements FunctionArgumentType<T> {
     final JoclArgumentType<T> joclArgumentType;
 
-    public PrimitiveWrapper(JoclArgumentType<T> joclArgumentType) {
+    public FunctionArgumentWrapper(JoclArgumentType<T> joclArgumentType) {
         this.joclArgumentType = joclArgumentType;
     }
 
     @Override
     public void bind(T var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
         joclArgumentType.bind(var, kernelExecution, kernelArgument);
-    }
-
-    @Override
-    public List<String> getNames() {
-        return joclArgumentType.getNames();
     }
 
     @Override
@@ -55,8 +50,8 @@ public class PrimitiveWrapper<T> implements FunctionArgumentType<T> {
     }
 
     @Override
-    public String getCName() {
-        return joclArgumentType.getCName();
+    public List<String> getCNames() {
+        return joclArgumentType.getCNames();
     }
 
     @Override

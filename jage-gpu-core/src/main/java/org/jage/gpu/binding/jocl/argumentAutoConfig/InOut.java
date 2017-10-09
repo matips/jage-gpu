@@ -1,4 +1,4 @@
-package org.jage.gpu.binding.jocl.arguments;
+package org.jage.gpu.binding.jocl.argumentAutoConfig;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Mark class as PrimitiveArgument: JoclArumentFactory will find and create instance of this classes
+ * Force type to be recognized as In/Out argument for AddressSpaceAutoConfiguration
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PrimitiveArgument {
+@interface InOut {
 }

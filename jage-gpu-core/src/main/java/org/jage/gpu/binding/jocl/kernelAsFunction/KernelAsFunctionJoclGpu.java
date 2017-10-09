@@ -6,8 +6,9 @@ import org.jage.gpu.binding.GPU;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JoclGpu;
-import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.FunctionArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.JoclArgumentType;
 import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.FunctionArgumentType;
+import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.GlobalArgument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,6 @@ public class KernelAsFunctionJoclGpu implements GPU {
 
     public KernelAsFunctionJoclGpu() throws IOException {
         joclGpu = new JoclGpu(true);
-        joclGpu.setArgumentFactory(new FunctionArgumentFactory());
     }
 
     @Override
@@ -80,7 +80,7 @@ public class KernelAsFunctionJoclGpu implements GPU {
             if (argumentType.isPointer()) {
                 kernelArgumentsText += "__global ";
             }
-            kernelArgumentsText += argumentType.getCName();
+            kernelArgumentsText += ((JoclArgumentType) argumentType).getCNames().get(0);
             kernelArgumentsText += " ";
             kernelArgumentsText += functionArgument.getArgumentName();
 
@@ -110,7 +110,9 @@ public class KernelAsFunctionJoclGpu implements GPU {
     }
 
     private ArgumentType toWrapperType(ArgumentType type) {
-        if (type instanceof FunctionArgumentType<?>) {
+        if (type.getClass().isAnnotationPresent(GlobalArgument.class)) {
+            return type;
+        } else if (type instanceof FunctionArgumentType<?>) {
             return ((FunctionArgumentType) type).toWrapperType();
         } else {
             return (type.isPointer()) ? type : type.toArray();

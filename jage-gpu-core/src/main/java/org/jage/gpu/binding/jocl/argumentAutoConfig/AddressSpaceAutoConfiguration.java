@@ -2,12 +2,12 @@ package org.jage.gpu.binding.jocl.argumentAutoConfig;
 
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
+import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.AutoConfigGPU;
 import org.jage.gpu.binding.jocl.JOCLKernel;
 import org.jage.gpu.binding.jocl.JoclGpu;
-import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.FunctionArgumentFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,6 @@ import static org.jage.gpu.binding.ArgumentTypeQualifier.CONST;
 public class AddressSpaceAutoConfiguration extends JoclGpu implements AutoConfigGPU {
     public AddressSpaceAutoConfiguration() throws IOException {
         super(true);
-        setArgumentFactory(new FunctionArgumentFactory());
     }
 
     @Override
@@ -48,12 +47,16 @@ public class AddressSpaceAutoConfiguration extends JoclGpu implements AutoConfig
                 .filter(kernelArgument ->
                         Sets.newHashSet(CONSTANT, PRIVATE).contains(kernelArgument.getAddressQualifier())
                                 || Sets.newHashSet(CONST).contains(kernelArgument.getArgumentTypeQualifier())
-                                || kernelArgument.getType().getCName().contains("InOut")
+                                || isAnnotatedAsInOut(kernelArgument.getType())
                 )
                 .map(KernelArgument::getArgumentName)
                 .collect(Collectors.toSet());
         return buildKernel(kernelFileContent, kernelName, inArguments, outArguments);
 
+    }
+
+    private boolean isAnnotatedAsInOut(ArgumentType type) {
+        return type.getClass().isAnnotationPresent(InOut.class);
     }
 
     @Override

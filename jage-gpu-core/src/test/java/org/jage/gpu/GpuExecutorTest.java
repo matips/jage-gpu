@@ -5,12 +5,11 @@ import org.apache.bcel.util.ClassLoader;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.KernelExecution;
 import org.jage.gpu.binding.jocl.JoclGpu;
-import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
+import org.jage.gpu.binding.jocl.arguments.JoclKernelArgument;
 import org.jage.gpu.binding.jocl.arguments.primitives.Int;
 import org.jage.gpu.binding.jocl.kernelAsFunction.KernelAsFunctionJoclGpu;
 import org.jage.gpu.binding.jocl.kernelAsFunction.SimpleGPU;
 import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.GlobalArgument;
-import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.PrimitiveWrapper;
 import org.junit.Test;
 
 import java.io.File;
@@ -51,6 +50,7 @@ public class GpuExecutorTest {
             assertEquals(arrays[0][i] + arrays[1][i], arrays[2][i], 0.00001);
         }
     }
+
     @Test
     public void testArgumentsTestKernelAsFunction() throws Exception {
         KernelAsFunctionJoclGpu joclGpu = new KernelAsFunctionJoclGpu();
@@ -97,7 +97,7 @@ public class GpuExecutorTest {
         kernelExecution.bindParameter(kernel.getArguments().get(0), 20);
         kernelExecution.execute();
         for (int i = 0; i < 20; i++) {
-            assertEquals((arrays[0][i] + arrays[1][i])*10, arrays[2][i], 0.00001);
+            assertEquals((arrays[0][i] + arrays[1][i]) * 10, arrays[2][i], 0.00001);
         }
     }
 
@@ -129,14 +129,12 @@ public class GpuExecutorTest {
     }
 
 }
-@GlobalArgument
-class GlobalInt extends PrimitiveWrapper<Integer> {
-    public GlobalInt() {
-        super(DefaultJoclArgumentFactory.INSTANCE.fromClass(Int.class));
-    }
 
+@GlobalArgument
+@JoclKernelArgument
+class GlobalInt extends Int {
     @Override
-    public List<String> getNames() {
+    public List<String> getCNames() {
         return Arrays.asList("global_int");
     }
 }

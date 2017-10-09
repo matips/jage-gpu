@@ -20,7 +20,7 @@ public abstract class AbstractJoclArgumentType<T> implements JoclArgumentType<T>
 
     @Override
     public String toString() {
-        return getCName();
+        return getCNames().get(0);
     }
 
     @Override
@@ -56,7 +56,7 @@ public abstract class AbstractJoclArgumentType<T> implements JoclArgumentType<T>
     }
 
     @Override
-    public List<String> getNames() {
+    public List<String> getCNames() {
         return names;
     }
 
@@ -65,8 +65,4 @@ public abstract class AbstractJoclArgumentType<T> implements JoclArgumentType<T>
         return Sets.immutableEnumSet(ArgumentAddressQualifier.GLOBAL, ArgumentAddressQualifier.CONSTANT);
     }
 
-    @Override
-    public String getCName() {
-        return names.get(0);
-    }
 }

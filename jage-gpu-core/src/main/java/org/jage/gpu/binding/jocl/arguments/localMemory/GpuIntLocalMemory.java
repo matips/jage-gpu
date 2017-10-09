@@ -3,10 +3,9 @@ package org.jage.gpu.binding.jocl.arguments.localMemory;
 import com.google.common.collect.Sets;
 import org.jage.gpu.binding.ArgumentAddressQualifier;
 import org.jage.gpu.binding.ArgumentType;
-import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
 import org.jage.gpu.binding.jocl.arguments.AbstractJoclArgumentType;
-import org.jage.gpu.binding.jocl.arguments.PrimitiveArgument;
+import org.jage.gpu.binding.jocl.arguments.JoclKernelArgument;
 import org.jocl.Sizeof;
 
 import java.util.Set;
@@ -14,7 +13,7 @@ import java.util.Set;
 /**
  * CRIF IT Solutions Poland
  */
-@PrimitiveArgument
+@JoclKernelArgument
 public class GpuIntLocalMemory extends AbstractJoclArgumentType<Integer> {
 
     protected GpuIntLocalMemory() {
@@ -22,7 +21,7 @@ public class GpuIntLocalMemory extends AbstractJoclArgumentType<Integer> {
     }
 
     @Override
-    public void bind(Integer var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
+    public void bind(Integer var, JOCLKernelExecution kernelExecution, org.jage.gpu.binding.KernelArgument kernelArgument) {
         kernelExecution.bindParameter(kernelArgument, null, (Sizeof.cl_int) * var);
     }
 

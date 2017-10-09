@@ -158,7 +158,7 @@ class GpuExecution {
                     if (kernelArguments.get(i).isOut()) {
                         agentLevel.doubleResultShift++;
                     }
-                } else if (isSpecificParameter(kernelArguments.get(i), IntArray.class) && kernelArguments.get(i).isIn()) {
+                } else if (isSpecificParameter(kernelArguments.get(i), IntArray.class)) {
                     if (kernelArguments.get(i).isIn()) {
                         agentLevel.intShift++;
                     }
@@ -186,7 +186,7 @@ class GpuExecution {
     }
 
     private boolean isSpecificParameter(KernelArgument kernelArgument, Class<? extends ArgumentType> argumentType) {
-        return kernelArgument.getType().getClass().isAssignableFrom(argumentType);
+        return argumentType.isAssignableFrom(kernelArgument.getType().getClass());
     }
 
     public void flush(Kernel kernel) {

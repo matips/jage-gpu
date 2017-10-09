@@ -64,7 +64,7 @@ public class AddressSpaceConfigurationGPUTest {
         for (int i = 0; i < size; i++) {
             in[i] = random.nextInt(20);
         }
-        int[] out = new int[2];
+        int[] out = new int[20];
         int sum = Arrays.stream(in).sum();
 //
         kernelExecution.bindParameter(sampleKernel.getArguments().get(0), size);

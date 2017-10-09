@@ -18,11 +18,11 @@ public class DefaultJoclArgumentFactory implements JoclArgumentFactory {
 
     public void initJoclArguments() {
         Reflections reflections = new Reflections("org.jage.gpu");
-        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(PrimitiveArgument.class);
+        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(JoclKernelArgument.class);
         arguments = annotated.stream()
                 .map(aClass -> {
-                    if (!AbstractJoclArgumentType.class.isAssignableFrom(aClass))
-                        throw new RuntimeException(aClass.getName() + " is annotated with " + PrimitiveArgument.class.getName());
+                    if (!JoclArgumentType.class.isAssignableFrom(aClass))
+                        throw new RuntimeException(aClass.getName() + " is annotated with " + JoclKernelArgument.class.getName());
                     return (Class<? extends JoclArgumentType>) aClass;
                 })
                 .map((ThrowingFunction<Class<? extends JoclArgumentType>, Constructor<? extends JoclArgumentType>>) aClass -> aClass.getDeclaredConstructor())
@@ -44,7 +44,7 @@ public class DefaultJoclArgumentFactory implements JoclArgumentFactory {
         }
 
         return arguments.stream()
-                .filter(type -> type.getNames().contains(cTypeName.trim()))
+                .filter(type -> type.getCNames().contains(cTypeName.trim()))
                 .filter(type -> type.validAddressSpaces().contains(searchArgumentAddressQualifier))
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("Cannot parse type " + cTypeName));
@@ -56,12 +56,19 @@ public class DefaultJoclArgumentFactory implements JoclArgumentFactory {
             initJoclArguments();
 
         return arguments.stream()
-                .filter(type -> aClass.isAssignableFrom(type.getClass()))
+                .filter(type -> aClass.equals(type.getClass()))
                 .reduce((joclArgumentType, joclArgumentType2) -> {
                     throw new RuntimeException("There are multiple JoclArgumentTypes matching " + aClass.getName());
                 })
                 .map(type -> (T) type)
-                .orElseThrow(() -> new RuntimeException("Cannot parse type " + aClass.getName()));
+                .orElseGet(() -> arguments.stream()
+                        .filter(type -> aClass.isAssignableFrom(type.getClass()))
+                        .reduce((joclArgumentType, joclArgumentType2) -> {
+                            throw new RuntimeException("There are multiple JoclArgumentTypes matching " + aClass.getName());
+                        })
+                        .map(type -> (T) type)
+                        .orElseThrow(() -> new RuntimeException("Cannot parse type " + aClass.getName()))
+                );
     }
 
 }

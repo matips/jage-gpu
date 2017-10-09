@@ -12,6 +12,8 @@ import org.jocl.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -127,6 +129,12 @@ public class JoclGpu implements GPU {
             clGetDeviceInfo(device, CL_DEVICE_MAX_CONSTANT_ARGS, Sizeof.cl_int, Pointer.to(maxConstantArgs), null);
             LOGGER.info("Max constant args: " + maxConstantArgs[0]);
 
+            long maxWorkGroupSize = getSize(device, CL_DEVICE_MAX_WORK_GROUP_SIZE);
+            LOGGER.info("Max work group size: " + maxWorkGroupSize);
+
+            long maxWorkItemSizes[] = getSizes(device, CL_DEVICE_MAX_WORK_ITEM_SIZES, 3);
+            LOGGER.info("Device max work item sizes:\t\t " + maxWorkItemSizes[0] + " / " + maxWorkItemSizes[1] + " / " + maxWorkItemSizes[2] + " ");
+
             // Create a context for the selected device
             context = clCreateContext(
                     contextProperties, 1, new cl_device_id[]{device},
@@ -227,6 +235,45 @@ public class JoclGpu implements GPU {
             writeLock.unlock();
 
         }
+    }
+
+    /**
+     * Returns the values of the device info parameter with the given name
+     *
+     * @param device    The device
+     * @param paramName The parameter name
+     * @param numValues The number of values
+     * @return The value
+     */
+    private static long[] getSizes(cl_device_id device, int paramName, int numValues) {
+        // The size of the returned data has to depend on
+        // the size of a size_t, which is handled here
+        ByteBuffer buffer = ByteBuffer.allocate(
+                numValues * Sizeof.size_t).order(ByteOrder.nativeOrder());
+        clGetDeviceInfo(device, paramName, Sizeof.size_t * numValues,
+                Pointer.to(buffer), null);
+        long values[] = new long[numValues];
+        if (Sizeof.size_t == 4) {
+            for (int i = 0; i < numValues; i++) {
+                values[i] = buffer.getInt(i * Sizeof.size_t);
+            }
+        } else {
+            for (int i = 0; i < numValues; i++) {
+                values[i] = buffer.getLong(i * Sizeof.size_t);
+            }
+        }
+        return values;
+    }
+    /**
+     * Returns the value of the device info parameter with the given name
+     *
+     * @param device The device
+     * @param paramName The parameter name
+     * @return The value
+     */
+    private static long getSize(cl_device_id device, int paramName)
+    {
+        return getSizes(device, paramName, 1)[0];
     }
 
     cl_context getContext() {

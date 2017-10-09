@@ -4,6 +4,7 @@ import org.jage.gpu.binding.ArgumentAddressQualifier;
 import org.jage.gpu.binding.ArgumentType;
 import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
+import org.jage.gpu.binding.jocl.arguments.JoclKernelArgument;
 import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.FunctionArgumentType;
 import org.jage.gpu.binding.jocl.kernelAsFunction.arguments.GlobalArgument;
 import org.jocl.Pointer;
@@ -12,6 +13,7 @@ import org.jocl.Sizeof;
 import java.util.*;
 
 @GlobalArgument
+@JoclKernelArgument
 public class GpuRandomType implements FunctionArgumentType<Random> {
     @Override
     public boolean isArray() {
@@ -33,10 +35,6 @@ public class GpuRandomType implements FunctionArgumentType<Random> {
         return Random.class.equals(javaType);
     }
 
-    @Override
-    public String getCName() {
-        return "Random";
-    }
 
     @Override
     public void bind(Random var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
@@ -44,7 +42,7 @@ public class GpuRandomType implements FunctionArgumentType<Random> {
     }
 
     @Override
-    public List<String> getNames() {
+    public List<String> getCNames() {
         return Collections.singletonList("Random");
     }
 

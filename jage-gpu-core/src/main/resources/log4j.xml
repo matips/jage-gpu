@@ -9,10 +9,6 @@
       <param name="ConversionPattern" value="%d{HH:mm:ss.SSS} [%20.20t] %p\t%40c{2} - %m%n"/>
     </layout>
   </appender>
-  <logger name="org.jage.gpu.binding.jocl.JoclGpu">
-    <level value="DEBUG"/>
-    <appender-ref ref="CONSOLE"/>
-  </logger>
   <root>
     <priority value="INFO"/>
     <appender-ref ref="CONSOLE"/>

@@ -1,22 +1,21 @@
 package org.jage.gpu.binding.jocl.arguments.primitives;
 
 import org.jage.gpu.binding.ArgumentType;
-import org.jage.gpu.binding.KernelArgument;
 import org.jage.gpu.binding.jocl.JOCLKernelExecution;
-import org.jage.gpu.binding.jocl.arguments.PrimitiveArgument;
+import org.jage.gpu.binding.jocl.arguments.JoclKernelArgument;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
 import org.jage.gpu.binding.jocl.arguments.arrays.IntArray;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 
-@PrimitiveArgument
+@JoclKernelArgument
 public class Int extends JoclPrimitiveType<Integer> {
-    Int() {
+    protected Int() {
         super(Integer.class, "uint", "int");
     }
 
     @Override
-    public void bind(Integer var, JOCLKernelExecution kernelExecution, KernelArgument kernelArgument) {
+    public void bind(Integer var, JOCLKernelExecution kernelExecution, org.jage.gpu.binding.KernelArgument kernelArgument) {
         kernelExecution.bindParameter(kernelArgument, Pointer.to(new int[] { var }), Sizeof.cl_uint);
     }
 
