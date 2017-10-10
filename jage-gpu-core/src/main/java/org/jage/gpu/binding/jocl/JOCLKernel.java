@@ -51,8 +51,7 @@ public class JOCLKernel implements Kernel {
             JoclArgumentType typeName = getArgumentType(paramNumber, argumentAddressQualifier, argumentTypeQualifier);
             boolean isIn = inArguments.contains(argumentName);
             boolean isOut = outArguments.contains(argumentName);
-            LOGGER.info("Argument " + argumentName + " isIn = " + isIn);
-            LOGGER.info("Argument " + argumentName + " isOut = " + isIn);
+            LOGGER.info("Argument " + paramNumber + " has name " + argumentName + ", type name " + typeName + " isIn = " + isIn + " isOut = " + isIn);
 
             argumentsTemp.add(new KernelArgument(
                     paramNumber,
