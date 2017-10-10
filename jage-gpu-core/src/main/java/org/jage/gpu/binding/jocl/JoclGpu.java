@@ -7,7 +7,6 @@ import org.jage.gpu.binding.GPU;
 import org.jage.gpu.binding.Kernel;
 import org.jage.gpu.binding.jocl.arguments.DefaultJoclArgumentFactory;
 import org.jage.gpu.binding.jocl.arguments.JoclArgumentFactory;
-import org.jage.gpu.helpers.Utils;
 import org.jocl.*;
 
 import java.io.File;
@@ -21,8 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.jocl.CL.*;
 
@@ -151,6 +148,11 @@ public class JoclGpu implements GPU {
 
     @Override
     public JOCLKernel buildKernel(String kernelFileContent, String kernelName, Set<String> inArguments, Set<String> outArguments) throws IOException {
+        JoclKernelSource joclKernelSource = new JoclKernelSource(kernelFileContent, kernelName);
+        return buildKernel(joclKernelSource, inArguments, outArguments);
+    }
+
+    public JOCLKernel buildKernel(JoclKernelSource joclKernelSource, Set<String> inArguments, Set<String> outArguments) throws IOException {
         try {
             readLock.lock();
             if (wasShutdowned.get()) {
@@ -158,45 +160,22 @@ public class JoclGpu implements GPU {
             }
 
             int[] errorCode = new int[1];
-            cl_program program = clCreateProgramWithSource(context, 1, new String[]{includeHeadres(kernelFileContent)}, null, errorCode);
-            checkCreateProgramError(errorCode[0], kernelName);
+
+            cl_program program = clCreateProgramWithSource(context, 1, new String[]{joclKernelSource.getSource()}, null, errorCode);
+            checkCreateProgramError(errorCode[0], joclKernelSource.kernelName);
             this.createdPrograms.add(program);
 
             // Build the program
             clBuildProgram(program, 0, null, "-cl-kernel-arg-info ", null, null);
 
             // Create the kernel
-            cl_kernel kernel = clCreateKernel(program, kernelName, null);
+            cl_kernel kernel = clCreateKernel(program, joclKernelSource.kernelName, null);
             this.createdKernels.add(kernel);
 
-            return new JOCLKernel(this, kernel, kernelName, inArguments, outArguments, argumentFactory);
+            return new JOCLKernel(this, kernel, inArguments, outArguments, argumentFactory, joclKernelSource);
         } finally {
             readLock.unlock();
         }
-    }
-
-    /**
-     * Try to include files from classpath
-     */
-    private String includeHeadres(String kernelFileContent) {
-        Pattern p = Pattern.compile("^#include\\s*\"(.*)\"$", Pattern.MULTILINE);
-
-        StringBuffer resultString = new StringBuffer();
-        Matcher regexMatcher = p.matcher(kernelFileContent);
-        while (regexMatcher.find()) {
-            String fileName = regexMatcher.group(1);
-
-            String replacement;
-            try {
-                replacement = Utils.getResourceAsString(fileName);
-            } catch (IOException | NullPointerException e) {
-                LOGGER.warn("Cannot find file " + fileName);
-                replacement = regexMatcher.group();
-            }
-            regexMatcher.appendReplacement(resultString, replacement);
-        }
-        regexMatcher.appendTail(resultString);
-        return resultString.toString();
     }
 
     @Override
@@ -264,15 +243,15 @@ public class JoclGpu implements GPU {
         }
         return values;
     }
+
     /**
      * Returns the value of the device info parameter with the given name
      *
-     * @param device The device
+     * @param device    The device
      * @param paramName The parameter name
      * @return The value
      */
-    private static long getSize(cl_device_id device, int paramName)
-    {
+    private static long getSize(cl_device_id device, int paramName) {
         return getSizes(device, paramName, 1)[0];
     }
 

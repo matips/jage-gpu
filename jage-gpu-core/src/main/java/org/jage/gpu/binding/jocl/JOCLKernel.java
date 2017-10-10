@@ -23,21 +23,20 @@ public class JOCLKernel implements Kernel {
     private static final Logger LOGGER = Logger.getLogger(JOCLKernel.class);
     private final cl_kernel kernel;
     private final JoclGpu gpu;
-    private final String kernelName;
     private final JoclArgumentFactory argumentFactory;
+    private final JoclKernelSource joclKernelSource;
     private List<KernelArgument> arguments;
 
-    public JOCLKernel(JoclGpu gpu, cl_kernel kernel, String kernelName, Set<String> inArguments, Set<String> outArguments, JoclArgumentFactory argumentFactory) throws IOException {
+    public JOCLKernel(JoclGpu gpu, cl_kernel kernel, Set<String> inArguments, Set<String> outArguments, JoclArgumentFactory argumentFactory, JoclKernelSource joclKernelSource) throws IOException {
         this.kernel = kernel;
-        this.kernelName = kernelName;
         this.gpu = gpu;
         this.argumentFactory = argumentFactory;
-
+        this.joclKernelSource = joclKernelSource;
         loadKernelInfo(inArguments, outArguments);
     }
 
     private void loadKernelInfo(Set<String> inArguments, Set<String> outArguments) {
-        LOGGER.info("Loading information about kernel: " + kernelName);
+        LOGGER.info("Loading information about kernel: " + joclKernelSource.kernelName);
         // Arrays that will store the parameter values
         int numArgs = getNumArgs();
 
@@ -77,7 +76,7 @@ public class JOCLKernel implements Kernel {
         int paramValueInt[] = {0};
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_ACCESS_QUALIFIER, Sizeof.cl_int, Pointer.to(paramValueInt), null);
         int accessQualifierCode = paramValueInt[0];
-        LOGGER.info(String.format("%d kernel %s argument has access qualifier: %d", argumentNumber, kernelName, accessQualifierCode));
+        LOGGER.info(String.format("%d kernel %s argument has access qualifier: %d", argumentNumber, joclKernelSource.kernelName, accessQualifierCode));
         return ArgumentAccessQualifier.fromCode(accessQualifierCode);
     }
 
@@ -85,7 +84,7 @@ public class JOCLKernel implements Kernel {
         int paramValueInt[] = {0};
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_ADDRESS_QUALIFIER, Sizeof.cl_int, Pointer.to(paramValueInt), null);
         int addressSpaceCode = paramValueInt[0];
-        LOGGER.info(String.format("%d kernel %s argument has address space qualifier: %d", argumentNumber, kernelName, addressSpaceCode));
+        LOGGER.info(String.format("%d kernel %s argument has address space qualifier: %d", argumentNumber, joclKernelSource.kernelName, addressSpaceCode));
         return ArgumentAddressQualifier.fromCode(addressSpaceCode);
 
     }
@@ -94,7 +93,7 @@ public class JOCLKernel implements Kernel {
         long paramValueInt[] = {0};
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_QUALIFIER, Sizeof.cl_long, Pointer.to(paramValueInt), null);
         long addressTypeCode = paramValueInt[0];
-        LOGGER.info(String.format("%d kernel %s argument has address type qualifier: %d", argumentNumber, kernelName, addressTypeCode));
+        LOGGER.info(String.format("%d kernel %s argument has address type qualifier: %d", argumentNumber, joclKernelSource.kernelName, addressTypeCode));
         return ArgumentTypeQualifier.fromCode(addressTypeCode);
 
     }
@@ -104,9 +103,10 @@ public class JOCLKernel implements Kernel {
         byte paramValueCharArray[] = new byte[1024];
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_NAME, 0, null, sizeArray);
         clGetKernelArgInfo(kernel, argumentNumber, CL_KERNEL_ARG_TYPE_NAME, sizeArray[0], Pointer.to(paramValueCharArray), null);
-        String typeName = new String(paramValueCharArray, 0, (int) sizeArray[0] - 1);
-        LOGGER.info(String.format("%d kernel %s argument has type: %s", argumentNumber, kernelName, typeName));
-        return argumentFactory.from(typeName, argumentAddressQualifier, argumentTypeQualifier);
+        String clArgType = new String(paramValueCharArray, 0, (int) sizeArray[0] - 1);
+        String myKernelArgumentName = joclKernelSource.loadDeclaredArgumentType(argumentNumber);
+        LOGGER.info(String.format("%d kernel %s argument has type: %s, real argument type is %s", argumentNumber, joclKernelSource.kernelName, myKernelArgumentName, clArgType));
+        return argumentFactory.from(myKernelArgumentName, argumentAddressQualifier, argumentTypeQualifier);
     }
 
     private String getArgumentName(int argumentNumber) {
@@ -119,7 +119,7 @@ public class JOCLKernel implements Kernel {
 
     @Override
     public String getKernelName() {
-        return kernelName;
+        return joclKernelSource.kernelName;
     }
 
     @Override
