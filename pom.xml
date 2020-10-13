@@ -16,7 +16,7 @@
     </modules>
 
     <properties>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.13.1</junit.version>
         <guava.version>15.0</guava.version>
         <apache.commons.version>3.3.2</apache.commons.version>
         <apache.commons.io.version>2.4</apache.commons.io.version>
