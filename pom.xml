@@ -19,7 +19,7 @@
         <junit.version>4.11</junit.version>
         <guava.version>15.0</guava.version>
         <apache.commons.version>3.3.2</apache.commons.version>
-        <apache.commons.io.version>2.4</apache.commons.io.version>
+        <apache.commons.io.version>2.7</apache.commons.io.version>
         <c3p0.version>0.9.5</c3p0.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jage.version>2.6.1</jage.version>
